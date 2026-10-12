@@ -1,0 +1,60 @@
+---
+title: "Seminario-Fuentes-De-Datos"
+author: "Claudia Fernández Ruiz y Nieves García Morquillas"
+date: "2026-10-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(sf)
+library(dplyr)
+```
+
+# Introducción
+# Objetivo general
+# Objetivos específicos
+# Metodología y Resultados
+# Fuentes de datos e importación 
+
+```{r importacion}
+luz <- st_read("data/Luz_Nocturna_Espana_2023.geojson", quiet = TRUE)
+no2 <- st_read("data/NO2_Espana_2023.geojson", quiet = TRUE)
+o3 <- st_read("data/O3_Espana_2023.geojson", quiet = TRUE)
+```
+
+```{r visualizar}
+# Primeras filas de cada tabla
+head(luz)
+head(no2)
+head(o3)
+
+names(luz)
+names(no2)
+names(o3)
+
+tabla_luz <- st_drop_geometry(luz) %>%
+  select(Comunidad = ADM1_NAME, Luz_nocturna = mean)
+
+tabla_no2 <- st_drop_geometry(no2) %>%
+  select(Comunidad = ADM1_NAME, NO2 = mean)
+
+tabla_o3 <- st_drop_geometry(o3) %>%
+  select(Comunidad = ADM1_NAME, O3 = mean)
+
+tabla_ccaa <- tabla_luz %>%
+  left_join(tabla_no2, by = "Comunidad") %>%
+  left_join(tabla_o3, by = "Comunidad") %>%
+  mutate(NO2 = NO2 * 1e6) %>%
+  arrange(Comunidad)
+
+knitr::kable(tabla_ccaa, digits = 3,
+             col.names = c("Comunidad autónoma", "Luz nocturna",
+                           "NO2 (µmol/m²)", "O3 (mol/m²)"),
+             caption = "Valores medios por comunidad autónoma (2023)")
+
+
+```
+
+# Conclusiones generales
+# Referencias

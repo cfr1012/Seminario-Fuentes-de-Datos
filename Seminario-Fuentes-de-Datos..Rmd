@@ -56,5 +56,39 @@ knitr::kable(tabla_ccaa, digits = 3,
 
 ```
 
+
+``` {r visualizar}
+library(readxl)
+ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+    sheet = "Consumo antidepresivos", range = "B11:D28", 
+    col_names = FALSE, col_types = c("text", 
+        "skip", "numeric"))
+View(ConsumoMedicamentosSaludMental_Espana_2001)
+
+```
+
+```{r visualizar}
+library(readxl)
+ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+    sheet = "consumo tranquilizantes", range = "B10:D28", 
+    col_types = c("text", "skip", "numeric"))
+View(ConsumoMedicamentosSaludMental_Espana_2001)
+```
+
+```{r visualizar}
+library(readxl)
+RuidoMolesto_Espana_2023 <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
+    range = "A6:B24", col_names = FALSE)
+View(RuidoMolesto_Espana_2023)
+```
+
+```{r visualizar}
+library(readxl)
+TrastornosMentales_Espana_2023 <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
+    range = "A6:B22", col_names = FALSE)
+View(TrastornosMentales_Espana_2023)
+```
+
+
 # Conclusiones generales
 # Referencias

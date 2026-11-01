@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(sf)
 library(dplyr)
+library(readr)
 ```
 
 # Introducción
@@ -89,6 +90,25 @@ TrastornosMentales_Espana_2023 <- read_excel("data/TrastornosMentales_Espana_202
 View(TrastornosMentales_Espana_2023)
 ```
 
+```{r importar-csv}
+
+
+depresion <- read_csv2(
+  "data/CuadroDepresion_Espana_2022.csv",
+  locale = locale(encoding = "Windows-1252"),
+  col_types = cols(.default = col_character()),
+  show_col_types = FALSE
+)
+
+sueno <- read_csv2(
+  "data/Horas de sueño_Espana_2011.csv",
+  locale = locale(encoding = "Windows-1252"),
+  col_types = cols(.default = col_character()),
+  show_col_types = FALSE
+)
+View(depresion)
+View(sueno)
+```
 
 # Conclusiones generales
 # Referencias

@@ -60,20 +60,20 @@ knitr::kable(tabla_ccaa, digits = 3,
 
 ``` {r visualizar}
 library(readxl)
-ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+antidepresivos <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
     col_names = FALSE, col_types = c("text", 
         "skip", "numeric"))
-View(ConsumoMedicamentosSaludMental_Espana_2001)
+View(antidepresivos)
 
 ```
 
 ```{r visualizar}
 library(readxl)
-ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+tranquilizantes <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "consumo tranquilizantes", range = "B10:D28", 
     col_types = c("text", "skip", "numeric"))
-View(ConsumoMedicamentosSaludMental_Espana_2001)
+View(tranquilizantes)
 ```
 
 ```{r visualizar}
@@ -109,6 +109,10 @@ sueno <- read_csv2(
 View(depresion)
 View(sueno)
 ```
+
+
+
+
 
 # Conclusiones generales
 # Referencias

@@ -1,8 +1,21 @@
 ---
-title: "Seminario-Fuentes-De-Datos"
-author: "Claudia Fernández Ruiz y Nieves García Morquillas"
-date: "2026-10-12"
-output: html_document
+title: "El lado invisible del progreso urbano"
+subtitle: "Análisis territorial de la contaminación atmosférica, la exposición a luz nocturna y los indicadores de salud mental en España."
+
+author:
+  - "Claudia Fernández Ruiz"
+  - "Nieves García Morquillas"
+  
+date: "12 de octubre de 2026"
+
+lang: es
+
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    theme: flatly
+    css: estilos.css
 ---
 
 ```{r setup, include=FALSE}
@@ -13,10 +26,52 @@ library(readr)
 ```
 
 # Introducción
-# Objetivo general
-# Objetivos específicos
-# Metodología y Resultados
-# Fuentes de datos e importación 
+El **progreso urbano**, definido como el proceso de **evolución, crecimiento y mejora integral** en el que las ciudades mejoran la calidad de vida de sus habitantes, tiene una gran influencia en los marcadores sanitarios de un territorio. Es por ello, que este concepto va más allá de una expansión en materia de asfalto, carreteras, edificios y comunicaciones; sino que implica un desarrollo equilibrado a nivel **social, económico, tecnológico y ambiental**, que garantice unas condiciones habitables, dignas y no perjudiciales.
+
+El **entorno ambiental** constituye uno de los principales **determinantes en la salud humana**. Sabemos que altos nivel de CO2 se vinculan en una mayor tasa de desarrollo de cáncer de pulmón o de enfermedades cardiovasculares en la población, o que la calidad del agua se vincula con la propagación de enfermedades transmisibles. Es por ello, que los indicadores de salud física y los parámetros que afectan a la misma *(potabilización del agua, contaminación del aire, radiación, etc)* son tenidos en cuenta en el diseño urbano. Pero, **¿estamos cubriendo todos los aspectos relativos a la salud humana?**
+
+Según la definición de la **OMS**, *“la salud es un estado de completo bienestar físico, mental y social, y no solamente la ausencia de afecciones o enfermedades”*. Por ello, podríamos afirmar con certeza que las ciudades se desarrollan garantizando una salud física y social de sus ciudadanos, pero, ¿y qué hay de su **salud mental**? **¿Pueden las condiciones ambientales vinculadas a la contaminación afectar a la salud humana?**
+
+En este seminario, que lleva por título *“El lado invisible del progreso urbano”*, se busca demostrar cómo el diseño y avance de las ciudades no están teniendo en cuenta su impacto en la salud mental de las personas, y en consecuencia, están siendo el causante de un claro **deterioro** de esta a nivel poblacional. Para su desarrollo, se emplearán datos de fuentes oficiales relativas a datos ambientales e informes del gobierno relativos a la estadística sanitaria, y se estudiará la relación existente entre los niveles de **contaminación ambiental, contaminación acústica y lumínica**, en el estado general de **salud mental** poblacional, el desarrollo de **trastornos mentales** y el consumo derivado de **fármacos**.
+
+
+## Fuentes de obtención de datos
+Para garantizar la fiabilidad de las conclusiones obtenidas, todos los datos han sido obtenidos de **páginas oficiales**. 
+
+Cabe aclararse que, la fecha y, por ello, actualidad de los datos no guarda una exacta vinculación entre los datos ambientales y los relativos a la salud. Esto se debe a que los **datos sensibles no son tan accesibles**, y además, tardan más tiempo en ser publicados, por tanto, se han tomado los ficheros más recientes que se encontraban disponibles *(actúan como una buena aproximación de los datos sanitarios actuales)*.
+
+Las fuentes empleadas han sido las siguinetes:
+- [Google Eart engine](https://earthengine.google.com/)
+- [Instituto Nacional de Estadística](https://www.ine.es/)
+- [Ministerio de Sanidad](https://www.sanidad.gob.es/estadEstudios/sanidadDatos/home.htm)
+- [Indicadores clave - Sistema Nacional de Salud, Gobierno de España](https://inclasns.sanidad.gob.es/main.html)
+
+
+## Antecedentes
+El entorno, referido a este como las **condiciones ambientales** que lo caracterizan, constituye un factor de suma relevancia para la salud humana, no solo por sus efectos sobre el **bienestar físico**, sino también por sus posibles implicaciones en la **salud mental** y el **sueño**.
+
+En las últimas décadas, el **crecimiento urbano**, el aumento del **tráfico** y la expansión de la **iluminación artificial nocturna** han modificado las condiciones ambientales de las ciudades. En este contexto, diferentes investigaciones han comenzado a focalizar sus estudios a la relación entre la contaminación acústica y lumínica, y la aparición de alteraciones psicológicas y del sueño.
+
+Primero de todo es conveniente aclarar algunos conceptos. Nos referimos a **contaminación acústica o sonora** a la presencia excesiva de **ruidos o vibraciones** que resultan molestos y perjudiciales para la salud de los seres vivos o para el estado del ecosistema. Por su parte, nos referimos a la **contaminación lumínica** como la **alteración** del estado natural de **oscuridad nocturna** causada por un uso innecesario o excesivo de luz artificial, causando su dispersión al cielo y la invasión de espacios ajenos.
+
+Definidos estos conceptos, resulta relevante conocer los antecedentes centíficos vinculados a esta temática. Cuando efectuamos una búsqueda de los efectos de la contaminación sobre la salud humana, la inmensa mayoría de los resulados nos hablan de su vinculación al cáncer, salud cardiovascular y propagación vírica. Ahora bien, si forzamos la búsqueda al ámbito de la salud mental *(incluyendo el término "AND mental health" en el constructo de la búsqueda booleana)*, se aprecian estudios de gran relevancia.
+
+----------------------------------------
+https://pubmed.ncbi.nlm.nih.gov/40730110/
+https://pubmed.ncbi.nlm.nih.gov/40154089/
+https://pubmed.ncbi.nlm.nih.gov/39721676/
+https://pubmed.ncbi.nlm.nih.gov/36502906/
+https://pubmed.ncbi.nlm.nih.gov/34600062/
+---------------------------------------
+
+
+
+
+
+
+
+
+# Importación de los datos
 
 ```{r importacion}
 luz <- st_read("data/Luz_Nocturna_Espana_2023.geojson", quiet = TRUE)
@@ -24,7 +79,7 @@ no2 <- st_read("data/NO2_Espana_2023.geojson", quiet = TRUE)
 o3 <- st_read("data/O3_Espana_2023.geojson", quiet = TRUE)
 ```
 
-```{r visualizar}
+```{r visualizar contaminantes}
 # Primeras filas de cada tabla
 head(luz)
 head(no2)
@@ -58,7 +113,7 @@ knitr::kable(tabla_ccaa, digits = 3,
 ```
 
 
-``` {r visualizar}
+``` {r visualizar salud mental}
 library(readxl)
 ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
@@ -68,7 +123,7 @@ View(ConsumoMedicamentosSaludMental_Espana_2001)
 
 ```
 
-```{r visualizar}
+```{r visualizar consumo medicamentos}
 library(readxl)
 ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "consumo tranquilizantes", range = "B10:D28", 
@@ -76,14 +131,14 @@ ConsumoMedicamentosSaludMental_Espana_2001 <- read_excel("data/ConsumoMedicament
 View(ConsumoMedicamentosSaludMental_Espana_2001)
 ```
 
-```{r visualizar}
+```{r visualizar ruido molesto}
 library(readxl)
 RuidoMolesto_Espana_2023 <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
     range = "A6:B24", col_names = FALSE)
 View(RuidoMolesto_Espana_2023)
 ```
 
-```{r visualizar}
+```{r visualizar trastornos mentales}
 library(readxl)
 TrastornosMentales_Espana_2023 <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
@@ -110,5 +165,23 @@ View(depresion)
 View(sueno)
 ```
 
+
+# Metodología y Resultados
+
 # Conclusiones generales
+
 # Referencias
+[1] Wang, M., Cho, Y., & Li, J. (2025). Air pollution and sleep health in middle-aged and older adults: A systematic review and meta-analysis. Sleep medicine reviews, 83, 102136. https://doi.org/10.1016/j.smrv.2025.102136
+
+[2] Deprato, A., Haldar, P., Navarro, J. F., Harding, B. N., Lacy, P., Maidstone, R., Moitra, S., Palomar-Cros, A., Durrington, H., Kogevinas, M., Moitra, S., & Adan, A. (2025). Associations between light at night and mental health: A systematic review and meta-analysis. The Science of the total environment, 974, 179188. https://doi.org/10.1016/j.scitotenv.2025.179188
+
+[3] Chen, M., Zhao, Y., Lu, Q., Ye, Z., Bai, A., Xie, Z., Zhang, D., & Jiang, Y. (2024). Artificial light at night and risk of depression: a systematic review and meta-analysis. Environmental health and preventive medicine, 29, 73. https://doi.org/10.1265/ehpm.24-00257
+
+[4] Zhang, Y., Ke, L., Ma, X., & Di, Q. (2023). Impact of ground-level ozone exposure on sleep quality and electroencephalogram patterns at different time scales. Environmental research, 218, 115025. https://doi.org/10.1016/j.envres.2022.115025
+
+[5] Borroni, E., Pesatori, A. C., Bollati, V., Buoli, M., & Carugno, M. (2022). Air pollution exposure and depression: A comprehensive updated systematic review and meta-analysis. Environmental pollution (Barking, Essex : 1987), 292(Pt A), 118245. https://doi.org/10.1016/j.envpol.2021.118245
+
+# Declaración del uso de Inteligencia Artifical
+En la realización de este seminario se ha realizado un **uso legítimo** de las diferentes herramientas de **IA disponibles**. En concreto, la imagen del fondo de la página HTML ha sido generada haciendo uso de la herramiento de [Microsoft Copilot](https://copilot.cloud.microsoft/chat?fromcode=cmmu8qodiz1&lhredirected=1&es=AutoSignIn) aunque el prompt introducido es de creación propia.
+
+Por otra parte, también se ha empleado la herramienta de [Chat GPT 6 - Luna](https://chatgpt.com/) como manual de ayuda en el proceso de codificación en lenguaje css en la elaboración del documento de estilos.css relativo a la estética del seminario.

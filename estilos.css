@@ -1,0 +1,94 @@
+/* FONDO DE LA PÁGINA HTML*/
+body {
+  background-image: url("fondo_seminario.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* ÁREA CENTRAL DE TEXTO - DEGRADACIÓN DEL FONDO DE PANTALLA */
+.main-container {
+  background-color: rgba(255, 255, 255, 0.82);
+  padding: 30px;
+  border-radius: 12px;
+}
+
+/* DISEÑO DE LOS DISTINTOS NIVELES DE TÍTULOS */
+h1 {
+  color: #512A75;
+  font-weight: bold;
+  font-size: 3rem;
+  text-align: center;
+}
+
+h2 {
+  color: #000;
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+
+h3 {
+  color: #000;
+  font-weight: bold;
+  font-size: 2rem;
+  text-align: center;
+}
+
+h4 {
+  color: #000;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+/* ENLACES */
+a {
+  color: #76509A;
+}
+
+/* MENÚ DEL ÍNDICE */
+#TOC {
+    margin: 30px auto;
+    padding: 20px;
+    border: none;
+}
+
+#TOC ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#TOC li {
+    display: block;
+    margin: 12px 0;
+}
+
+#TOC > ul > li > a {
+    display: inline-block;
+    background-color: #512A75;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 22px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: bold;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.2);
+}
+
+#TOC ul ul a {
+    display: inline-block;
+    background-color: #9475B5;
+    color: white;
+    padding: 8px 17px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+#TOC a:hover {
+    background-color: #76509A;
+    transform: scale(1.03);
+}

@@ -64,11 +64,29 @@ https://pubmed.ncbi.nlm.nih.gov/36502906/
 https://pubmed.ncbi.nlm.nih.gov/34600062/
 ---------------------------------------
 
+# Objetivos
+## Objetivo general
+El objetivo principal de este seminario es reflejar mediante el apoyo en **datos reales** el impacto que tienen los diversos **parámetros de contaminación** en la **salud mental poblacional**. Se busca analizar la contaminación desde una perspectiva diferente. Si bien a menudo nos referimos a esta como las partículas de **CO2 presentes**, expresado en **ppm** *(partes por millón)*; el término contaminación engloba muchos más aspectos. En concreto, este seminario se focaliza en la **contaminación acústica** y la **contaminación lumínica**. Se va a buscar relación entre estas variables, expresadas como parámetros de **luz nocturna**, **NO2** y **O3** con el desarrollo de diversos **trastornos mentales**, destacando el cuadro depresivo; la **interrupción del ciclo circadiano**, expresado como un déficit en las horas de sueño; y en el **consumo de fármaco**s vinculados a la salud mental, representando el consumo de relajantes, tranquilizantes y fármacos para dormir, así como elde antidepresivos.
+
+## Objetivos específicos
+Vinculado al desarrollo del objetivo principal, se han generado **3 objetivos específicos** que permiten realizar un análisis más fragmentado del problema y por ello, facilitan la obtención de conclusiones. Los 3 objetivos se han formulado en forma de pregunta y se detallan a continuación.
+
+
+**PREGUNTA 1: ¿Una mayor tasa de contaminación lumínica está directamente vinculada a una interrupción del ciclo circadiano que deriva en el consumo de medicamentos y derivados para conciliar el sueño?**
+
+Esta primera pregunta tiene como objetivo estudiar el impacto que tiene la presencia de **luz artificial durante la noche** sobre nuestro **ritmo circadiano**. El cuerpo humano, al igual que muchos otros seres vivos, cuenta con un ciclo circadiano interno *(un reloj natural)* que se relaciona con la secreción de la hormona melatonina. Este ciclo es el encargado de regular el estado **sueño-vigilia**, manteniéndonos despiertos durante el día e induciendo la somnolencia a la noche. Ahora bien, este ciclo funciona mediante **fotorreceptores** y la información vinculada a la cantidad de luz que estos captan. En ausencia de estímulosos luminosos, propios de la noche, se secreta esta hormona. Se busca ver el impacto que tiene la **no presencia de oscuridad** en las horas nocturnas y el impacto en la **conciliación del sueño**.
+
+
+**PREGUNTA 2: ¿La exposición simultánea a altos niveles de contaminación acústica y lumínica se correlacionan con una peor salud mental?**
+
+Esta segunda pregunta quiere vincular los fatores contaminantes con el deterioro del estado de salud mental. El cuerpo humano está formado por **múltiples receptores**, vinculados a los **5 sentidos**, que captan información de manera constante del exterior y permiten actuar acorde a la misma. Sin embargo, el desarrollo urbano actual ha derivado en una **sobre-estimulación de estos receptores**. El **ruido** y la **luz** son factores ambientales que permanecen **presentes todo el día** *(incluso por la noche)*, llegando a sobrecargar a nuestros receptores *(aunque en la mayoría de las ocasiones no seamos realmente consciente de ello)*. Esta sobrecarga afecta directamente a **nivel neurológico**, ya que todo esta información debe ser procesada de alguna forma por el cerebro. Por ello, se quiere observar el efecto de estos contaminantes en la **prevalencia del deterioro del estado de la salud mental** y, en consecuencia con el desarrollo de **trastornos mentales**.
 
 
 
+**PREGUNTA 3: ¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
 
+Esta última pregunta se centra en el desarrollo de un trastorno mental concreto, la **depresión**. Además de los medidores objetivos de las variables físicas vinculadas a la **contaminación acústica**, resulta de gran relevancia conocer la **percepción poblacional** de la misma. No es lo mismo decir que en una ciudad hay ruido, a que los habitantes de la misma **consideren molesto** el mismo en el **interior de sus hogares**. Es decir, se van a emplear datos que reflejan el **porcentaje** de cada Comunidad Autónoma que declara que el **ruido** procedente del **exterior de su vivienda** es **molesto en la misma**. Se busca comprobar la concordancia de la **percepción pública** con los datos reales de la contaminación acústica. Una vez se establece la **correspondencia**, se quiere comprobar si el ruido es un **factor influyente** en el desarrollo de cuadros depresivos y por tanto, una ciudad con peor índice de esta contaminación se ve condicionada a un mayor consumo de **fármacos antidepresivos** en su población.
 
 
 # Importación de los datos
@@ -182,6 +200,6 @@ View(sueno)
 [5] Borroni, E., Pesatori, A. C., Bollati, V., Buoli, M., & Carugno, M. (2022). Air pollution exposure and depression: A comprehensive updated systematic review and meta-analysis. Environmental pollution (Barking, Essex : 1987), 292(Pt A), 118245. https://doi.org/10.1016/j.envpol.2021.118245
 
 # Declaración del uso de Inteligencia Artifical
-En la realización de este seminario se ha realizado un **uso legítimo** de las diferentes herramientas de **IA disponibles**. En concreto, la imagen del fondo de la página HTML ha sido generada haciendo uso de la herramiento de [Microsoft Copilot](https://copilot.cloud.microsoft/chat?fromcode=cmmu8qodiz1&lhredirected=1&es=AutoSignIn) aunque el prompt introducido es de creación propia.
+En la realización de este seminario se ha realizado un **uso legítimo** de las diferentes herramientas de **IA disponibles**. En concreto, la imagen del fondo de la página HTML ha sido generada haciendo uso de la herramienta de [Microsoft Copilot](https://copilot.cloud.microsoft/chat?fromcode=cmmu8qodiz1&lhredirected=1&es=AutoSignIn) aunque el prompt introducido es de creación propia.
 
 Por otra parte, también se ha empleado la herramienta de [Chat GPT 6 - Luna](https://chatgpt.com/) como manual de ayuda en el proceso de codificación en lenguaje css en la elaboración del documento de estilos.css relativo a la estética del seminario.

@@ -159,14 +159,14 @@ View(tranquilizantes)
 
 ```{r visualizar ruido molesto}
 library(readxl)
-RuidoMolesto_Espana_2023 <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
+ruido <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
     range = "A6:B24", col_names = FALSE)
 View(RuidoMolesto_Espana_2023)
 ```
 
 ```{r visualizar trastornos mentales}
 library(readxl)
-TrastornosMentales_Espana_2023 <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
+trastornos <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
 View(TrastornosMentales_Espana_2023)
 ```
@@ -279,8 +279,74 @@ tabla_poblacion <- poblacion %>%
 
 ```
 
+### 3. Posteriormente, se van a convertir las unidades.
 
+- **NO2:** el valor original en mol/m² tiene muchos ceros. Se va a multiplicar por 1.000.000, quedando expresado en **µmol/m²**, más fácil de leer.
+- **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono (1 DU = 4,4615 x 10⁻⁴ mol/m²).
+- **Depresión:** el INE da el número de personas en miles. Una comunidad grande siempre tendrá más casos que una pequeña, por lo que se va a dividir entre la población para obtener el **porcentaje de población** con un cuadro depresivo mayor. 
 
+```{r unidades}
+# Se van a unir las tres variables ambientales por el nombre (en los tres GeoJSON es igual), y después, se normalizan los nombres y unidades correspondientes.
+tabla_ambiente <- tabla_luz %>%
+  left_join(tabla_no2, by = "Comunidad") %>%
+  left_join(tabla_o3, by = "Comunidad") %>%
+  mutate(Comunidad = normalizar_ccaa(Comunidad),
+        NO2 = NO2 * 1e6,
+        O3 = O3 / 4.4615e-4)
+# Depresión: de miles de personas a porcentaje de la población.
+tabla_depresion <- tabla_depresion %>%
+  left_join(tabla_poblacion, by = "Comunidad") %>%
+  mutate(Depresion_pct = Depresion_miles * 1000/Poblacion*100)
+
+head(tabla_depresion)
+```
+
+### 4. Construcción de la tabla de referencia.
+
+Se va a unir todo en una única tabla llamada `datos`, en la que cada fila se corresponde con una comunidad autónoma. Cabe destacar, que se van a excluir **Ceuta y Melilla** porque: no aparecen en los datos de trastornos mentales, en los datos de 2001 aparecen sumadas en una sola fila y, al ser territorios muy pequeños, la media de los datos de satélite puede ser poco significativa.
+
+```{r tabla-maestra}
+datos <- tabla_ambiente %>%
+  left_join(tabla_ruido,            by = "Comunidad") %>%
+  left_join(tabla_trastornos,       by = "Comunidad") %>%
+  left_join(tabla_depresion,        by = "Comunidad") %>%
+  left_join(tabla_sueno,            by = "Comunidad") %>%
+  left_join(tabla_tranquilizantes,  by = "Comunidad") %>%
+  left_join(tabla_antidepresivos,   by = "Comunidad") %>%
+  filter(!Comunidad %in% c("Ceuta", "Melilla")) %>%
+  select(-Depresion_miles, -Poblacion) %>%
+  arrange(Comunidad)
+
+kable(datos, digits = 2,
+      col.names = c("Comunidad", "Luz (nW/cm²/sr)", "NO2 (µmol/m²)", "O3 (DU)",
+                    "Ruido molesto (%)", "Trastornos mentales (%)", "Depresión (%)",
+                    "Horas de sueño", "Tranquilizantes (por 100 hab.)",
+                    "Antidepresivos (por 100 hab.)"),
+      caption = "Tabla maestra: variables normalizadas por comunidad autónoma")
+
+```
+
+### 5. Normalización mín-máx (escala 0-1).
+
+La luz y el ruido se miden en unidades distintas, así que no se pueden sumar directamente. Ante esto, la **normalización mín-máx** permite transformar cualquier variable a una escala de 0 a 1: el valor más bajo pasa a ser 0 y el más alto, 1.
+
+$$x_{normalizado} = \frac{x - x_{min}}{x_{max} - x_{min}}$$
+Con ambas variables en la misma escala, se construye un **índice de exposición combinada** (resultante de la media de las dos).
+
+```{r normalizacion-0-1}
+normalizar_0_1 <- function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm= TRUE) - min(x, na.rm = TRUE))
+}
+datos <- datos %>%
+  mutate(Luz_norm = normalizar_0_1(Luz),
+         Ruido_norm = normalizar_0_1(Ruido),
+         Indice_exposicion = (Luz_norm + Ruido_norm)/2)
+datos %>%
+  select(Comunidad, Luz, Luz_norm, Ruido, Ruido_norm,Indice_exposicion) %>%
+  arrange(desc(Indice_exposicion)) %>%
+  head(5) %>%
+  kable(digits = 2, caption = "Ejemplo: las 5 comunidades con mayor exposición combinada")
+```
 
 =======
 # Metodología y Resultados

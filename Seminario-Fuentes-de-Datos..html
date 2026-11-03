@@ -395,8 +395,20 @@ datos</a></li>
 <li><a href="#metodolog%C3%ADa-y-resultados" id="toc-metodología-y-resultados"><span class="toc-section-number">3</span> Metodología y Resultados</a>
 <ul>
 <li><a href="#importaci%C3%B3n-de-los-datos" id="toc-importación-de-los-datos"><span class="toc-section-number">3.1</span> Importación de los datos</a></li>
-<li><a href="#normalizaci%C3%B3n-de-los-datos" id="toc-normalización-de-los-datos"><span class="toc-section-number">3.2</span> Normalización de los
-datos</a></li>
+<li><a href="#normalizaci%C3%B3n-de-los-datos" id="toc-normalización-de-los-datos"><span class="toc-section-number">3.2</span> Normalización de los datos</a>
+<ul>
+<li><a href="#en-primer-lugar-se-va-a-llevar-a-cabo-la-unificaci%C3%B3n-de-los-nombres-de-las-comunidades-aut%C3%B3nomas." id="toc-en-primer-lugar-se-va-a-llevar-a-cabo-la-unificación-de-los-nombres-de-las-comunidades-autónomas."><span class="toc-section-number">3.2.1</span> 1. En primer lugar, se va a
+llevar a cabo la unificación de los nombres de las comunidades
+autónomas.</a></li>
+<li><a href="#a-continuaci%C3%B3n-se-va-a-proceder-a-dejar-todas-las-tablas-con-la-misma-estructura." id="toc-a-continuación-se-va-a-proceder-a-dejar-todas-las-tablas-con-la-misma-estructura."><span class="toc-section-number">3.2.2</span> 2. A continuación, se va a
+proceder a dejar todas las tablas con la misma estructura.</a></li>
+<li><a href="#posteriormente-se-van-a-convertir-las-unidades." id="toc-posteriormente-se-van-a-convertir-las-unidades."><span class="toc-section-number">3.2.3</span> 3. Posteriormente, se van a
+convertir las unidades.</a></li>
+<li><a href="#construcci%C3%B3n-de-la-tabla-de-referencia." id="toc-construcción-de-la-tabla-de-referencia."><span class="toc-section-number">3.2.4</span> 4. Construcción de la tabla de
+referencia.</a></li>
+<li><a href="#normalizaci%C3%B3n-m%C3%ADn-m%C3%A1x-escala-0-1." id="toc-normalización-mín-máx-escala-0-1."><span class="toc-section-number">3.2.5</span> 5. Normalización mín-máx (escala
+0-1).</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#conclusiones-generales" id="toc-conclusiones-generales"><span class="toc-section-number">4</span> Conclusiones generales</a></li>
 <li><a href="#referencias" id="toc-referencias"><span class="toc-section-number">5</span> Referencias</a></li>
@@ -460,6 +472,91 @@ datos sanitarios actuales)</em>.</p>
 <p>Las fuentes empleadas han sido las siguinetes: - <a href="https://earthengine.google.com/">Google Eart engine</a> - <a href="https://www.ine.es/">Instituto Nacional de Estadística</a> - <a href="https://www.sanidad.gob.es/estadEstudios/sanidadDatos/home.htm">Ministerio
 de Sanidad</a> - <a href="https://inclasns.sanidad.gob.es/main.html">Indicadores clave -
 Sistema Nacional de Salud, Gobierno de España</a></p>
+<p>La siguiente tabla resume qué fichero aporta cada variable, su año y
+su unidad:</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="18%" />
+<col width="25%" />
+<col width="18%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Fichero (carpeta <code>data/</code>)</th>
+<th align="center">Año</th>
+<th align="left">Unidad original</th>
+<th align="left">Fuente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Luz nocturna</td>
+<td align="left"><code>Luz_Nocturna_Espana_2023.geojson</code></td>
+<td align="center">2023</td>
+<td align="left">Radiancia (nW/cm²/sr)</td>
+<td align="left">Google Earth Engine</td>
+</tr>
+<tr class="even">
+<td align="left">Dióxido de nitrógeno (NO2)</td>
+<td align="left"><code>NO2_Espana_2023.geojson</code></td>
+<td align="center">2023</td>
+<td align="left">mol/m²</td>
+<td align="left">Google Earth Engine (Sentinel-5P)</td>
+</tr>
+<tr class="odd">
+<td align="left">Ozono (O3)</td>
+<td align="left"><code>O3_Espana_2023.geojson</code></td>
+<td align="center">2023</td>
+<td align="left">mol/m²</td>
+<td align="left">Google Earth Engine (Sentinel-5P)</td>
+</tr>
+<tr class="even">
+<td align="left">Ruido exterior molesto</td>
+<td align="left"><code>RuidoMolesto_Espana_2023.xls</code></td>
+<td align="center">2023</td>
+<td align="left">% de población</td>
+<td align="left">INCLASNS (Ministerio de Sanidad)</td>
+</tr>
+<tr class="odd">
+<td align="left">Trastornos mentales</td>
+<td align="left"><code>TrastornosMentales_Espana_2023.xls</code></td>
+<td align="center">2023</td>
+<td align="left">Prevalencia registrada (%)</td>
+<td align="left">INCLASNS (BDCAP)</td>
+</tr>
+<tr class="even">
+<td align="left">Cuadro depresivo mayor</td>
+<td align="left"><code>CuadroDepresion_Espana_2022.csv</code></td>
+<td align="center">2022</td>
+<td align="left">Miles de personas</td>
+<td align="left">INE</td>
+</tr>
+<tr class="odd">
+<td align="left">Horas de sueño</td>
+<td align="left"><code>Horas_Sueno_Espana_2011.csv</code></td>
+<td align="center">2011</td>
+<td align="left">Horas (media)</td>
+<td align="left">INE</td>
+</tr>
+<tr class="even">
+<td align="left">Tranquilizantes y antidepresivos</td>
+<td align="left"><code>ConsumoMedicamentosSaludMental_Espana_2001.xls</code></td>
+<td align="center">2001</td>
+<td align="left">Tasa por 100 habitantes ≥ 16 años</td>
+<td align="left">Ministerio de Sanidad (ENS 2001)</td>
+</tr>
+<tr class="odd">
+<td align="left">Población</td>
+<td align="left"><code>Poblacion_CCAA_2022.csv</code></td>
+<td align="center">2022</td>
+<td align="left">Habitantes</td>
+<td align="left">INE (Padrón a 1 de enero de 2022)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="antecedentes" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> Antecedentes</h2>
@@ -493,7 +590,35 @@ mayoría de los resulados nos hablan de su vinculación al cáncer, salud
 cardiovascular y propagación vírica. Ahora bien, si forzamos la búsqueda
 al ámbito de la salud mental <em>(incluyendo el término “AND mental
 health” en el constructo de la búsqueda booleana)</em>, se aprecian
-estudios de gran relevancia.</p>
+estudios de gran relevancia:</p>
+<ul>
+<li><strong>Contaminación atmosférica y depresión.</strong> En una
+revisión sistemática y metaanálisis de 39 estudios, Borroni et
+al. (2022) observaron que la exposición a material particulado y a NO2,
+tanto a corto como a largo plazo, se asociaba con un mayor riesgo de
+depresión, siendo la asociación con las PM2.5 la más robusta; para el
+ozono, en cambio, la asociación no fue estadísticamente
+significativa.</li>
+<li><strong>Luz nocturna y depresión.</strong> Chen et al. (2024)
+reunieron 7 estudios con más de 560.000 participantes y concluyeron que
+tanto la luz artificial nocturna exterior como la interior se asocian
+con un mayor riesgo de depresión: cada aumento de 1 nW/cm²/sr de luz
+exterior (la misma unidad que usamos en el seminario presente) se
+relacionó con un aumento del 0,43% del riesgo. Por su parte, Deprato et
+al. (2025) revisan la asociación entre la luz nocturna y distintos
+desenlaces de salud mental.</li>
+<li><strong>Contaminación y sueño.</strong> Wang et al. (2025) revisan
+la relación entre la contaminación atmosférica y la salud del sueño en
+adultos de mediana y avanzada edad, y Zhang et al. (2023) estudian el
+impacto del ozono a nivel del sueño sobre la calidad del sueño y los
+patrones del electroencefalograma.</li>
+</ul>
+<p>No obstante, cabe recalcar que son escasos los trabajos que combinan,
+en un mismo análisis y a escala territorial en España, la <strong>luz
+nocturna medida por satélite</strong>, la <strong>contaminación
+atmosférica</strong>, la <strong>percepción del ruido</strong> y varios
+<strong>indicadores de salud mental</strong> procedentes de fuentes
+oficiales. Este seminario pretende abordar justamente esa laguna.</p>
 <table>
 <tbody>
 <tr class="odd">
@@ -519,6 +644,11 @@ estudios de gran relevancia.</p>
 <h1><span class="header-section-number">2</span> Objetivos</h1>
 <div id="objetivo-general" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Objetivo general</h2>
+<p><strong>Analizar, a escala de comunidad autónoma, si la exposición a
+contaminación lumínima (luz nocturna), acústica (ruido percibido) y
+atmosférica (NO2 y O3) se relaciona con peores indicadores de salud
+mental (trastornos mentales, depresión, horas de sueño y consumo de
+psicofármacos) en España. </strong></p>
 <p>El objetivo principal de este seminario es reflejar mediante el apoyo
 en <strong>datos reales</strong> el impacto que tienen los diversos
 <strong>parámetros de contaminación</strong> en la <strong>salud mental
@@ -881,17 +1011,46 @@ tranquilizantes &lt;- read_excel(&quot;data/ConsumoMedicamentosSaludMental_Espan
     col_types = c(&quot;text&quot;, &quot;skip&quot;, &quot;numeric&quot;))
 View(tranquilizantes)</code></pre>
 <pre class="r"><code>library(readxl)
-RuidoMolesto_Espana_2023 &lt;- read_excel(&quot;data/RuidoMolesto_Espana_2023.xls&quot;, 
+ruido &lt;- read_excel(&quot;data/RuidoMolesto_Espana_2023.xls&quot;, 
     range = &quot;A6:B24&quot;, col_names = FALSE)
-View(RuidoMolesto_Espana_2023)</code></pre>
+head(ruido)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   ...1                          ...2
+##   &lt;chr&gt;                        &lt;dbl&gt;
+## 1 Andalucía (AN)                30.5
+## 2 Aragón (AR)                   25.2
+## 3 Asturias, Principado de (AS)  24.6
+## 4 Balears, Illes (IB)           38.5
+## 5 Canarias (CN)                 38.7
+## 6 Cantabria (CB)                29.0</code></pre>
 <pre class="r"><code>library(readxl)
-TrastornosMentales_Espana_2023 &lt;- read_excel(&quot;data/TrastornosMentales_Espana_2023.xls&quot;, 
+trastornos &lt;- read_excel(&quot;data/TrastornosMentales_Espana_2023.xls&quot;, 
     range = &quot;A6:B22&quot;, col_names = FALSE)
-View(TrastornosMentales_Espana_2023)</code></pre>
-<pre class="r"><code>depresion &lt;- read_csv2(
+head(trastornos)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   ...1                          ...2
+##   &lt;chr&gt;                        &lt;dbl&gt;
+## 1 Andalucía (AN)                8.36
+## 2 Aragón (AR)                  13.8 
+## 3 Asturias, Principado de (AS) 20.6 
+## 4 Balears, Illes (IB)          24.1 
+## 5 Canarias (CN)                29.5 
+## 6 Cantabria (CB)               14.7</code></pre>
+<pre class="r"><code># Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022)
+poblacion &lt;- data.frame(
+  Comunidad = c(&quot;Andalucía&quot;, &quot;Aragón&quot;, &quot;Asturias&quot;, &quot;Illes Balears&quot;, &quot;Canarias&quot;,
+                &quot;Cantabria&quot;, &quot;Castilla y León&quot;, &quot;Castilla-La Mancha&quot;, &quot;Cataluña&quot;,
+                &quot;Comunitat Valenciana&quot;, &quot;Extremadura&quot;, &quot;Galicia&quot;, &quot;Comunidad de Madrid&quot;,
+                &quot;Región de Murcia&quot;, &quot;Navarra&quot;, &quot;País Vasco&quot;, &quot;La Rioja&quot;, &quot;Ceuta&quot;, &quot;Melilla&quot;),
+  Poblacion = c(8500187, 1326315, 1004686, 1176659, 2177701,
+                585402, 2372640, 2053328, 7792611,
+                5097967, 1054776, 2690464, 6750336,
+                1531878, 664117, 2208174, 319892, 83117, 85170)
+)
+
+depresion &lt;- read_csv2(
   &quot;data/CuadroDepresion_Espana_2022.csv&quot;,
   locale = locale(encoding = &quot;Windows-1252&quot;),
-  col_types = cols(.default = col_character()),
   show_col_types = FALSE
 )
 
@@ -946,8 +1105,477 @@ coinciden.</td>
 </tr>
 </tbody>
 </table>
-<p>======= # Metodología y Resultados &gt;&gt;&gt;&gt;&gt;&gt;&gt;
-48ec8ed15c8e83b74a191981514377e3ceebc27d</p>
+<div id="en-primer-lugar-se-va-a-llevar-a-cabo-la-unificación-de-los-nombres-de-las-comunidades-autónomas." class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> 1. En primer lugar,
+se va a llevar a cabo la unificación de los nombres de las comunidades
+autónomas.</h3>
+<pre class="r"><code>normalizar_ccaa &lt;- function(nombre) {
+  case_when(
+    grepl(&quot;Ceuta y Melilla&quot;, nombre) ~ &quot;Ceuta y Melilla&quot;,
+    grepl(&quot;Andaluc&quot;, nombre)         ~ &quot;Andalucía&quot;,
+    grepl(&quot;Arag&quot;, nombre)            ~ &quot;Aragón&quot;,
+    grepl(&quot;Asturias&quot;, nombre)        ~ &quot;Asturias&quot;,
+    grepl(&quot;Balear&quot;, nombre)          ~ &quot;Baleares&quot;,
+    grepl(&quot;Canarias&quot;, nombre)        ~ &quot;Canarias&quot;,
+    grepl(&quot;Cantabria&quot;, nombre)       ~ &quot;Cantabria&quot;,
+    grepl(&quot;Castilla y&quot;, nombre)      ~ &quot;Castilla y León&quot;,
+    grepl(&quot;Mancha&quot;, nombre)          ~ &quot;Castilla-La Mancha&quot;,
+    grepl(&quot;Catalu&quot;, nombre)          ~ &quot;Cataluña&quot;,
+    grepl(&quot;Valencia&quot;, nombre)        ~ &quot;C.Valenciana&quot;,
+    grepl(&quot;Extremadura&quot;, nombre)     ~ &quot;Extremadura&quot;,
+    grepl(&quot;Galicia&quot;, nombre)         ~ &quot;Galicia&quot;,
+    grepl(&quot;Madrid&quot;, nombre)          ~ &quot;Madrid&quot;,
+    grepl(&quot;Murcia&quot;, nombre)          ~ &quot;Murcia&quot;,
+    grepl(&quot;Navarra&quot;, nombre)         ~ &quot;Navarra&quot;,
+    grepl(&quot;Vasco&quot;, nombre)           ~ &quot;País Vasco&quot;,
+    grepl(&quot;Rioja&quot;, nombre)           ~ &quot;La Rioja&quot;,
+    grepl(&quot;Ceuta&quot;, nombre)           ~ &quot;Ceuta&quot;,
+    grepl(&quot;Melilla&quot;, nombre)         ~ &quot;Melilla&quot;,
+    TRUE ~ nombre # sino coincide con nada, se deja como estaba.
+  )
+}</code></pre>
+</div>
+<div id="a-continuación-se-va-a-proceder-a-dejar-todas-las-tablas-con-la-misma-estructura." class="section level3" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> 2. A continuación,
+se va a proceder a dejar todas las tablas con la misma estructura.</h3>
+<p>Cada tabla se reduce a dos columnas: <code>Comunidad</code> y el
+valor de la variable. Con <code>select()</code> se lleva a cabo la
+elección y el renombrado de las columnas y con <code>mutate()</code> se
+aplica la función anterior a los nombres.</p>
+<pre class="r"><code># VARIABLES AMBIENTALES (GeoJSON).
+
+tabla_luz &lt;- st_drop_geometry(luz) %&gt;% select(Comunidad = ADM1_NAME, Luz = mean)
+tabla_no2 &lt;- st_drop_geometry(no2) %&gt;% select(Comunidad = ADM1_NAME, NO2 = mean)
+tabla_o3 &lt;- st_drop_geometry(o3) %&gt;% select(Comunidad = ADM1_NAME, O3 = mean)
+
+# VARIABLES DE SALUD (Excel).
+tabla_ruido &lt;- ruido %&gt;%
+  select(Comunidad = 1, Ruido = 2) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+tabla_trastornos &lt;- trastornos %&gt;%
+  select(Comunidad = 1, Trastornos = 2) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+tabla_antidepresivos &lt;- antidepresivos %&gt;%
+  select(Comunidad = 1, Antidepresivos = 2) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+tabla_tranquilizantes &lt;- tranquilizantes %&gt;%
+  select(Comunidad = 1, Tranquilizantes = 2) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+# VARIABLES DE SALUD (CSV).
+tabla_depresion &lt;- depresion %&gt;%
+  select(Comunidad = 2, Depresion_miles = 4) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+tabla_sueno &lt;- sueno %&gt;%
+  select(Comunidad = 3, Horas_sueno = 5) %&gt;%
+  filter(!is.na(Comunidad)) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))
+
+tabla_poblacion &lt;- poblacion %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad))</code></pre>
+</div>
+<div id="posteriormente-se-van-a-convertir-las-unidades." class="section level3" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> 3. Posteriormente,
+se van a convertir las unidades.</h3>
+<ul>
+<li><strong>NO2:</strong> el valor original en mol/m² tiene muchos
+ceros. Se va a multiplicar por 1.000.000, quedando expresado en
+<strong>µmol/m²</strong>, más fácil de leer.</li>
+<li><strong>O3:</strong> se convierte de mol/m² a <strong>Unidades
+Dobson (DU)</strong>, la unidad habitual para el ozono (1 DU = 4,4615 x
+10⁻⁴ mol/m²).</li>
+<li><strong>Depresión:</strong> el INE da el número de personas en
+miles. Una comunidad grande siempre tendrá más casos que una pequeña,
+por lo que se va a dividir entre la población para obtener el
+<strong>porcentaje de población</strong> con un cuadro depresivo
+mayor.</li>
+</ul>
+<pre class="r"><code># Se van a unir las tres variables ambientales por el nombre (en los tres GeoJSON es igual), y después, se normalizan los nombres y unidades correspondientes.
+tabla_ambiente &lt;- tabla_luz %&gt;%
+  left_join(tabla_no2, by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_o3, by = &quot;Comunidad&quot;) %&gt;%
+  mutate(Comunidad = normalizar_ccaa(Comunidad),
+        NO2 = NO2 * 1e6,
+        O3 = O3 / 4.4615e-4)
+# Depresión: de miles de personas a porcentaje de la población.
+tabla_depresion &lt;- tabla_depresion %&gt;%
+  left_join(tabla_poblacion, by = &quot;Comunidad&quot;) %&gt;%
+  mutate(Depresion_pct = Depresion_miles * 1000/Poblacion*100)
+
+head(tabla_depresion)</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##   Comunidad Depresion_miles Poblacion Depresion_pct
+##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Andalucía           360.    8500187          4.24
+## 2 Aragón               55.2   1326315          4.16
+## 3 Asturias             59.8   1004686          5.95
+## 4 Baleares             92.7   1176659          7.88
+## 5 Canarias            149.    2177701          6.86
+## 6 Cantabria            33.2    585402          5.67</code></pre>
+</div>
+<div id="construcción-de-la-tabla-de-referencia." class="section level3" number="3.2.4">
+<h3><span class="header-section-number">3.2.4</span> 4. Construcción de
+la tabla de referencia.</h3>
+<p>Se va a unir todo en una única tabla llamada <code>datos</code>, en
+la que cada fila se corresponde con una comunidad autónoma. Cabe
+destacar, que se van a excluir <strong>Ceuta y Melilla</strong> porque:
+no aparecen en los datos de trastornos mentales, en los datos de 2001
+aparecen sumadas en una sola fila y, al ser territorios muy pequeños, la
+media de los datos de satélite puede ser poco significativa.</p>
+<pre class="r"><code>datos &lt;- tabla_ambiente %&gt;%
+  left_join(tabla_ruido,            by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_trastornos,       by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_depresion,        by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_sueno,            by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_tranquilizantes,  by = &quot;Comunidad&quot;) %&gt;%
+  left_join(tabla_antidepresivos,   by = &quot;Comunidad&quot;) %&gt;%
+  filter(!Comunidad %in% c(&quot;Ceuta&quot;, &quot;Melilla&quot;)) %&gt;%
+  select(-Depresion_miles, -Poblacion) %&gt;%
+  arrange(Comunidad)
+
+kable(datos, digits = 2,
+      col.names = c(&quot;Comunidad&quot;, &quot;Luz (nW/cm²/sr)&quot;, &quot;NO2 (µmol/m²)&quot;, &quot;O3 (DU)&quot;,
+                    &quot;Ruido molesto (%)&quot;, &quot;Trastornos mentales (%)&quot;, &quot;Depresión (%)&quot;,
+                    &quot;Horas de sueño&quot;, &quot;Tranquilizantes (por 100 hab.)&quot;,
+                    &quot;Antidepresivos (por 100 hab.)&quot;),
+      caption = &quot;Tabla maestra: variables normalizadas por comunidad autónoma&quot;)</code></pre>
+<table style="width:100%;">
+<caption>Tabla maestra: variables normalizadas por comunidad
+autónoma</caption>
+<colgroup>
+<col width="10%" />
+<col width="8%" />
+<col width="7%" />
+<col width="4%" />
+<col width="9%" />
+<col width="12%" />
+<col width="7%" />
+<col width="7%" />
+<col width="16%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Comunidad</th>
+<th align="right">Luz (nW/cm²/sr)</th>
+<th align="right">NO2 (µmol/m²)</th>
+<th align="right">O3 (DU)</th>
+<th align="right">Ruido molesto (%)</th>
+<th align="right">Trastornos mentales (%)</th>
+<th align="right">Depresión (%)</th>
+<th align="left">Horas de sueño</th>
+<th align="right">Tranquilizantes (por 100 hab.)</th>
+<th align="right">Antidepresivos (por 100 hab.)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Andalucía</td>
+<td align="right">1.54</td>
+<td align="right">23.77</td>
+<td align="right">309.33</td>
+<td align="right">30.50</td>
+<td align="right">8.36</td>
+<td align="right">4.24</td>
+<td align="left">7,81</td>
+<td align="right">3.16</td>
+<td align="right">3.01</td>
+</tr>
+<tr class="even">
+<td align="left">Aragón</td>
+<td align="right">0.76</td>
+<td align="right">19.80</td>
+<td align="right">315.05</td>
+<td align="right">25.19</td>
+<td align="right">13.80</td>
+<td align="right">4.16</td>
+<td align="left">7,82</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Asturias</td>
+<td align="right">1.16</td>
+<td align="right">27.58</td>
+<td align="right">314.51</td>
+<td align="right">24.64</td>
+<td align="right">20.60</td>
+<td align="right">5.95</td>
+<td align="left">7,74</td>
+<td align="right">0.75</td>
+<td align="right">3.76</td>
+</tr>
+<tr class="even">
+<td align="left">Baleares</td>
+<td align="right">2.31</td>
+<td align="right">23.34</td>
+<td align="right">317.60</td>
+<td align="right">38.47</td>
+<td align="right">24.06</td>
+<td align="right">7.88</td>
+<td align="left">8,07</td>
+<td align="right">4.25</td>
+<td align="right">4.00</td>
+</tr>
+<tr class="odd">
+<td align="left">C.Valenciana</td>
+<td align="right">2.91</td>
+<td align="right">28.16</td>
+<td align="right">314.03</td>
+<td align="right">26.32</td>
+<td align="right">33.03</td>
+<td align="right">18.11</td>
+<td align="left">7,83</td>
+<td align="right">4.15</td>
+<td align="right">3.22</td>
+</tr>
+<tr class="even">
+<td align="left">Canarias</td>
+<td align="right">3.36</td>
+<td align="right">16.04</td>
+<td align="right">292.64</td>
+<td align="right">38.69</td>
+<td align="right">29.47</td>
+<td align="right">6.86</td>
+<td align="left">7,72</td>
+<td align="right">1.92</td>
+<td align="right">3.73</td>
+</tr>
+<tr class="odd">
+<td align="left">Cantabria</td>
+<td align="right">1.41</td>
+<td align="right">25.82</td>
+<td align="right">315.07</td>
+<td align="right">29.05</td>
+<td align="right">14.68</td>
+<td align="right">5.67</td>
+<td align="left">7,80</td>
+<td align="right">3.38</td>
+<td align="right">2.63</td>
+</tr>
+<tr class="even">
+<td align="left">Castilla y León</td>
+<td align="right">0.66</td>
+<td align="right">20.48</td>
+<td align="right">312.75</td>
+<td align="right">20.38</td>
+<td align="right">22.22</td>
+<td align="right">4.78</td>
+<td align="left">7,75</td>
+<td align="right">2.15</td>
+<td align="right">2.28</td>
+</tr>
+<tr class="odd">
+<td align="left">Castilla-La Mancha</td>
+<td align="right">0.67</td>
+<td align="right">20.98</td>
+<td align="right">311.69</td>
+<td align="right">18.99</td>
+<td align="right">6.73</td>
+<td align="right">4.38</td>
+<td align="left">7,85</td>
+<td align="right">2.71</td>
+<td align="right">1.91</td>
+</tr>
+<tr class="even">
+<td align="left">Cataluña</td>
+<td align="right">2.39</td>
+<td align="right">30.15</td>
+<td align="right">317.43</td>
+<td align="right">31.92</td>
+<td align="right">25.47</td>
+<td align="right">5.85</td>
+<td align="left">7,72</td>
+<td align="right">2.97</td>
+<td align="right">3.52</td>
+</tr>
+<tr class="odd">
+<td align="left">Extremadura</td>
+<td align="right">0.57</td>
+<td align="right">21.30</td>
+<td align="right">311.11</td>
+<td align="right">19.82</td>
+<td align="right">6.32</td>
+<td align="right">2.44</td>
+<td align="left">7,75</td>
+<td align="right">4.71</td>
+<td align="right">4.63</td>
+</tr>
+<tr class="even">
+<td align="left">Galicia</td>
+<td align="right">1.13</td>
+<td align="right">25.79</td>
+<td align="right">314.28</td>
+<td align="right">21.60</td>
+<td align="right">15.48</td>
+<td align="right">5.66</td>
+<td align="left">7,77</td>
+<td align="right">1.68</td>
+<td align="right">2.96</td>
+</tr>
+<tr class="odd">
+<td align="left">La Rioja</td>
+<td align="right">1.37</td>
+<td align="right">21.21</td>
+<td align="right">314.31</td>
+<td align="right">25.92</td>
+<td align="right">11.25</td>
+<td align="right">5.88</td>
+<td align="left">7,86</td>
+<td align="right">3.54</td>
+<td align="right">0.51</td>
+</tr>
+<tr class="even">
+<td align="left">Madrid</td>
+<td align="right">6.79</td>
+<td align="right">47.66</td>
+<td align="right">312.27</td>
+<td align="right">30.06</td>
+<td align="right">10.66</td>
+<td align="right">7.35</td>
+<td align="left">7,81</td>
+<td align="right">3.71</td>
+<td align="right">3.56</td>
+</tr>
+<tr class="odd">
+<td align="left">Murcia</td>
+<td align="right">2.43</td>
+<td align="right">23.60</td>
+<td align="right">311.24</td>
+<td align="right">22.44</td>
+<td align="right">14.83</td>
+<td align="right">6.61</td>
+<td align="left">7,91</td>
+<td align="right">2.63</td>
+<td align="right">2.38</td>
+</tr>
+<tr class="even">
+<td align="left">Navarra</td>
+<td align="right">1.17</td>
+<td align="right">23.84</td>
+<td align="right">315.64</td>
+<td align="right">10.91</td>
+<td align="right">17.20</td>
+<td align="right">3.22</td>
+<td align="left">7,92</td>
+<td align="right">2.00</td>
+<td align="right">1.25</td>
+</tr>
+<tr class="odd">
+<td align="left">País Vasco</td>
+<td align="right">2.89</td>
+<td align="right">28.77</td>
+<td align="right">315.84</td>
+<td align="right">24.23</td>
+<td align="right">19.78</td>
+<td align="right">3.82</td>
+<td align="left">7,74</td>
+<td align="right">2.14</td>
+<td align="right">1.67</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="normalización-mín-máx-escala-0-1." class="section level3" number="3.2.5">
+<h3><span class="header-section-number">3.2.5</span> 5. Normalización
+mín-máx (escala 0-1).</h3>
+<p>La luz y el ruido se miden en unidades distintas, así que no se
+pueden sumar directamente. Ante esto, la <strong>normalización
+mín-máx</strong> permite transformar cualquier variable a una escala de
+0 a 1: el valor más bajo pasa a ser 0 y el más alto, 1.</p>
+<p><span class="math display">\[x_{normalizado} = \frac{x -
+x_{min}}{x_{max} - x_{min}}\]</span> Con ambas variables en la misma
+escala, se construye un <strong>índice de exposición combinada</strong>
+(resultante de la media de las dos).</p>
+<pre class="r"><code>normalizar_0_1 &lt;- function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm= TRUE) - min(x, na.rm = TRUE))
+}
+datos &lt;- datos %&gt;%
+  mutate(Luz_norm = normalizar_0_1(Luz),
+         Ruido_norm = normalizar_0_1(Ruido),
+         Indice_exposicion = (Luz_norm + Ruido_norm)/2)
+datos %&gt;%
+  select(Comunidad, Luz, Luz_norm, Ruido, Ruido_norm,Indice_exposicion) %&gt;%
+  arrange(desc(Indice_exposicion)) %&gt;%
+  head(5) %&gt;%
+  kable(digits = 2, caption = &quot;Ejemplo: las 5 comunidades con mayor exposición combinada&quot;)</code></pre>
+<table>
+<caption>Ejemplo: las 5 comunidades con mayor exposición
+combinada</caption>
+<thead>
+<tr class="header">
+<th align="left">Comunidad</th>
+<th align="right">Luz</th>
+<th align="right">Luz_norm</th>
+<th align="right">Ruido</th>
+<th align="right">Ruido_norm</th>
+<th align="right">Indice_exposicion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Madrid</td>
+<td align="right">6.79</td>
+<td align="right">1.00</td>
+<td align="right">30.06</td>
+<td align="right">0.69</td>
+<td align="right">0.84</td>
+</tr>
+<tr class="even">
+<td align="left">Canarias</td>
+<td align="right">3.36</td>
+<td align="right">0.45</td>
+<td align="right">38.69</td>
+<td align="right">1.00</td>
+<td align="right">0.72</td>
+</tr>
+<tr class="odd">
+<td align="left">Baleares</td>
+<td align="right">2.31</td>
+<td align="right">0.28</td>
+<td align="right">38.47</td>
+<td align="right">0.99</td>
+<td align="right">0.64</td>
+</tr>
+<tr class="even">
+<td align="left">Cataluña</td>
+<td align="right">2.39</td>
+<td align="right">0.29</td>
+<td align="right">31.92</td>
+<td align="right">0.76</td>
+<td align="right">0.52</td>
+</tr>
+<tr class="odd">
+<td align="left">C.Valenciana</td>
+<td align="right">2.91</td>
+<td align="right">0.38</td>
+<td align="right">26.32</td>
+<td align="right">0.55</td>
+<td align="right">0.47</td>
+</tr>
+</tbody>
+</table>
+<p>=======</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>48ec8ed15c8e83b74a191981514377e3ceebc27d</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</div>
 </div>
 </div>
 <div id="conclusiones-generales" class="section level1" number="4">

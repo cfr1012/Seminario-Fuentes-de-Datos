@@ -26,6 +26,7 @@ library(readr)
 library(readxl)
 library(knitr)
 library(leaflet)
+library(ggplot2)
 ```
 
 # Introducción
@@ -322,7 +323,8 @@ Cada fuente "habla un idioma distinto", así que antes de poder comparar las var
 | Variables con escalas muy distintas. | Normalización mín-máx (0-1). |
 | Cobertura territorial distinta. | Análisis con las 17 CCAA. |
 
-### En primer lugar, se va a llevar a cabo la unificación de los nombres de las comunidades autónomas.
+### Unificación de nombres
+En primer lugar, se va a llevar a cabo la unificación de los nombres de las comunidades autónomas.
 
 ```{r funcion-nombres}
 normalizar_ccaa <- function(nombre) {
@@ -352,8 +354,8 @@ normalizar_ccaa <- function(nombre) {
 }
 ```
 
-### Modificación en el tipo de dato importado en las horas de sueño
-La variable de interés importada en el fichero correspondiente a las horas de sueño es el total. No obstante, este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
+### Modificación tipos de datos importados
+La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una incorrección en el tipo de dato relativo a las horas de sueño totales. Este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
 
 ```{r sueno-formatoNumerico}
 sueno_numerico <- sueno %>%
@@ -361,7 +363,8 @@ sueno_numerico <- sueno %>%
   mutate(Horas_sueno = as.numeric(gsub(",", ".", Horas_sueno)))
 ```
 
-### A continuación, se va a proceder a dejar todas las tablas con la misma estructura.
+### Unificación de la estructura
+A continuación, se va a proceder a dejar todas las tablas con la misma estructura.
 
 Cada tabla se reduce a dos columnas: `Comunidad` y el valor de la variable. Con `select()` se lleva a cabo la elección y el renombrado de las columnas y con `mutate()` se aplica la función anterior a los nombres.
 
@@ -404,7 +407,8 @@ tabla_poblacion <- poblacion %>%
 ```
 
 
-### Posteriormente, se van a convertir las unidades.
+### Conversión de las unidades
+Posteriormente, se van a convertir las unidades, siguiendo los siguientes parámetros:
 
 - **NO2:** el valor original en mol/m² tiene muchos ceros. Se va a multiplicar por 1.000.000, quedando expresado en **µmol/m²**, más fácil de leer.
 - **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono (1 DU = 4,4615 x 10⁻⁴ mol/m²).
@@ -451,7 +455,7 @@ kable(datos, digits = 2,
 
 ```
 
-### 5. Normalización mín-máx (escala 0-1).
+### Normalización mín-máx (escala 0-1).
 
 La luz y el ruido se miden en unidades distintas, así que no se pueden sumar directamente. Ante esto, la **normalización mín-máx** permite transformar cualquier variable a una escala de 0 a 1: el valor más bajo pasa a ser 0 y el más alto, 1.
 
@@ -474,51 +478,92 @@ datos %>%
 ```
 
 ## Procesamiento de datos 
+### Primera pregunta
 
-```{r pregunta 1}
+**¿Una mayor tasa de contaminación lumínica está directamente vinculada a una interrupción del ciclo circadiano que deriva en el consumo de medicamentos y derivados para conciliar el sueño?**
+
+En primer lugar, queremos estudiar la relación existente entre la **cantidad de luz nocturna** con las horas de **sueño** y el consumo de **fármacos** vinculados a la **relajación y conciliación del sueño** en su población.
+
+Primero de todo, mostramos el conjunto de datos **ordenados** de manera **decreciente por la cantidad de luz** nocturna que poseen. Sin embargo, esto no nos permite extraer conclusiones ya que no se aprecia una ordenación evidente en el resto de variables.
+
+```{r pregunta 1-ordenacionLuz}
 datos %>%
   select(Comunidad, Luz, Horas_sueno, Tranquilizantes) %>%
   arrange(desc(Luz))
 
-# Medias de las comunidades con más luz que la media frente al resto
-datos %>%
-  mutate(Grupo = case_when(Luz > mean(Luz) ~ "Más luz",
-                           .default = "Menos luz")) %>%
-  group_by(Grupo) %>%
-  summarise(Comunidades = n(),
-            Sueno_medio = mean(Horas_sueno, na.rm = TRUE),
-            Tranq_medio = mean(Tranquilizantes, na.rm = TRUE))
 ```
 
-```{r pregunta 2}
-datos %>%
-  select(Comunidad, Indice_exposicion, Trastornos, Depresion_pct) %>%
-  arrange(desc(Indice_exposicion))
+Los valores relativos a la contaminación lumínica ordenados de manera decreciente pueden apreciarse en el siguiente gráfico.
 
-# Comunidades con luz Y ruido por encima de la media frente al resto
-datos %>%
-  mutate(Grupo = case_when(Luz > mean(Luz) & Ruido > mean(Ruido) ~ "Alta luz y alto ruido",
-                           .default = "Resto")) %>%
-  group_by(Grupo) %>%
-  summarise(Comunidades = n(),
-            Trastornos_medio = mean(Trastornos, na.rm = TRUE),
-            Depresion_media  = mean(Depresion_pct, na.rm = TRUE))
+```{r pregunta 1-graficosLuz}
+ggplot(datos, aes(x = reorder(Comunidad, Luz), y = Luz)) +
+  geom_bar(stat = "identity", fill = "purple") +
+  coord_flip() +
+  labs(x = "Comunidad autónoma",
+       y = "Contaminación lumínica (nW/cm²/sr)",
+       title = "Contaminación lumínica por comunidad autónoma")
 ```
 
-```{r pregunta 3}
-datos %>%
-  select(Comunidad, Ruido, Depresion_pct, Antidepresivos) %>%
-  arrange(desc(Ruido))
 
-# Medias de las comunidades con más ruido molesto que la media frente al resto
-datos %>%
-  mutate(Grupo = case_when(Ruido > mean(Ruido) ~ "Más ruido molesto",
-                           .default = "Menos ruido molesto")) %>%
-  group_by(Grupo) %>%
-  summarise(Comunidades = n(),
-            Depresion_media = mean(Depresion_pct, na.rm = TRUE),
-            Antidep_medio   = mean(Antidepresivos, na.rm = TRUE))
+A continuación, se han obtenido los **valores medios** de las tres variables relacionadas para todo el territorio español.
+
+```{r pregunta 1-valoresMedios}
+summarise(.data = datos, Luz_media = mean(Luz, na.rm = TRUE), sueño_media = mean(Horas_sueno, na.rm = TRUE), tranquilizantes_media = mean(Tranquilizantes, na.rm = TRUE))
+
 ```
+
+De esta forma se obtiene que la cantidad de luz media es de **1.97 nW/cm²/sr**, el sueño de **7.81 horas** y el consumo de **tranquilizantes de 2.86 %** respecto de la población total.
+
+
+Y las **desviaciones típicas existentes**, obteniendo valores de **1.52, 0.08 y 1.06 paralas variables de luz, sueño y tranquilizantes** respectivamente.
+
+```{r pregunta 1-desviacionTipica}
+summarise(.data = datos, Luz_desviacionTipica = sd(Luz, na.rm = TRUE), sueño_desviacionTipica = sd(Horas_sueno, na.rm = TRUE), tranquilizantes_desviacionTipica = sd(Tranquilizantes, na.rm = TRUE))
+
+```
+
+Finalmente, se han **agrupado las Comunidades Autónomas** en función de si presentaban parámetros de **luz nocturna inferiores o superiores a la media**. Establecidos los grupos, se calcularon las medias de las horas de sueño y del porcentaje de la población que consume relajantes. Esta tabla permite extraer conclusiones respecto a la relación de las variables, apoyándose en los cálculos de media y desviación anteriores.
+
+```{r pregunta 1-resumen}
+datos %>%
+  select(Comunidad, Luz, Horas_sueno, Tranquilizantes) %>%
+  mutate(Grupo_comparacion_media_luz = case_when(Luz > mean(Luz) ~ "Luz superior a la media",
+                           .default = "Luz menor a la media")) %>%
+  group_by(Grupo_comparacion_media_luz) %>%
+  summarise(Sueno_media = mean(Horas_sueno, na.rm = TRUE),
+            Tranquilizantes_media = mean(Tranquilizantes, na.rm = TRUE))
+```
+
+
+```{r pregunta 1-graficosDistribucionSueño}
+datos_grafico <- datos %>%
+  mutate(Grupo = case_when(
+    Luz > mean(Luz, na.rm = TRUE) ~ "Luz superior a la media",
+    .default = "Luz inferior o igual a la media"
+  ))
+
+ggplot(datos_grafico, aes(x = Grupo, y = Horas_sueno)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Contaminación lumínica",
+       y = "Horas medias de sueño",
+       title = "Distribución de las horas de sueño según la contaminación lumínica")
+```
+```{r pregunta 1-graficosDistribucionTranquilizantes}
+ggplot(datos_grafico, aes(x = Grupo, y = Tranquilizantes)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Contaminación lumínica",
+       y = "Consumo de tranquilizantes (%)",
+       title = "Distribución del consumo de tranquilizantes según la contaminación lumínica")
+```
+
+### Segunda pregunta
+
+**¿La exposición simultánea a altos niveles de contaminación acústica y lumínica se correlacionan con una peor salud mental?**
+
+### Tercera pregunta
+
+**¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
+
 
 
 # Conclusiones generales

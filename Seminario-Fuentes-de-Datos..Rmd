@@ -24,6 +24,7 @@ library(sf)
 library(dplyr)
 library(readr)
 library(knitr)
+library(leaflet)
 ```
 
 # Introducción
@@ -41,7 +42,7 @@ Para garantizar la fiabilidad de las conclusiones obtenidas, todos los datos han
 
 Cabe aclararse que, la fecha y, por ello, actualidad de los datos no guarda una exacta vinculación entre los datos ambientales y los relativos a la salud. Esto se debe a que los **datos sensibles no son tan accesibles**, y además, tardan más tiempo en ser publicados, por tanto, se han tomado los ficheros más recientes que se encontraban disponibles *(actúan como una buena aproximación de los datos sanitarios actuales)*.
 
-Las fuentes empleadas han sido las siguinetes:
+Las fuentes empleadas han sido las siguientes:
 - [Google Eart engine](https://earthengine.google.com/)
 - [Instituto Nacional de Estadística](https://www.ine.es/)
 - [Ministerio de Sanidad](https://www.sanidad.gob.es/estadEstudios/sanidadDatos/home.htm)
@@ -80,14 +81,6 @@ Definidos estos conceptos, resulta relevante conocer los antecedentes centífico
 No obstante, cabe recalcar que son escasos los trabajos que combinan, en un mismo análisis y a escala territorial en España, la **luz nocturna medida por satélite**, la **contaminación atmosférica**, la **percepción del ruido** y varios **indicadores de salud mental** procedentes de fuentes oficiales. Este seminario pretende abordar justamente esa laguna.
 
 
-----------------------------------------
-https://pubmed.ncbi.nlm.nih.gov/40730110/
-https://pubmed.ncbi.nlm.nih.gov/40154089/
-https://pubmed.ncbi.nlm.nih.gov/39721676/
-https://pubmed.ncbi.nlm.nih.gov/36502906/
-https://pubmed.ncbi.nlm.nih.gov/34600062/
----------------------------------------
-
 # Objetivos
 
 ## Objetivo general
@@ -108,16 +101,21 @@ Vinculado al desarrollo del objetivo principal, se han generado **3 objetivos es
 Esta primera pregunta tiene como objetivo estudiar el impacto que tiene la presencia de **luz artificial durante la noche** sobre nuestro **ritmo circadiano**. El cuerpo humano, al igual que muchos otros seres vivos, cuenta con un ciclo circadiano interno *(un reloj natural)* que se relaciona con la secreción de la hormona melatonina. Este ciclo es el encargado de regular el estado **sueño-vigilia**, manteniéndonos despiertos durante el día e induciendo la somnolencia a la noche. Ahora bien, este ciclo funciona mediante **fotorreceptores** y la información vinculada a la cantidad de luz que estos captan. En ausencia de estímulosos luminosos, propios de la noche, se secreta esta hormona. Se busca ver el impacto que tiene la **no presencia de oscuridad** en las horas nocturnas y el impacto en la **conciliación del sueño**.
 
 
+
+
 **PREGUNTA 2: ¿La exposición simultánea a altos niveles de contaminación acústica y lumínica se correlacionan con una peor salud mental?**
 
 Esta segunda pregunta quiere vincular los fatores contaminantes con el deterioro del estado de salud mental. El cuerpo humano está formado por **múltiples receptores**, vinculados a los **5 sentidos**, que captan información de manera constante del exterior y permiten actuar acorde a la misma. Sin embargo, el desarrollo urbano actual ha derivado en una **sobre-estimulación de estos receptores**. El **ruido** y la **luz** son factores ambientales que permanecen **presentes todo el día** *(incluso por la noche)*, llegando a sobrecargar a nuestros receptores *(aunque en la mayoría de las ocasiones no seamos realmente consciente de ello)*. Esta sobrecarga afecta directamente a **nivel neurológico**, ya que todo esta información debe ser procesada de alguna forma por el cerebro. Por ello, se quiere observar el efecto de estos contaminantes en la **prevalencia del deterioro del estado de la salud mental** y, en consecuencia con el desarrollo de **trastornos mentales**.
 
 
 
+
+
 **PREGUNTA 3: ¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
-
 Esta última pregunta se centra en el desarrollo de un trastorno mental concreto, la **depresión**. Además de los medidores objetivos de las variables físicas vinculadas a la **contaminación acústica**, resulta de gran relevancia conocer la **percepción poblacional** de la misma. No es lo mismo decir que en una ciudad hay ruido, a que los habitantes de la misma **consideren molesto** el mismo en el **interior de sus hogares**. Es decir, se van a emplear datos que reflejan el **porcentaje** de cada Comunidad Autónoma que declara que el **ruido** procedente del **exterior de su vivienda** es **molesto en la misma**. Se busca comprobar la concordancia de la **percepción pública** con los datos reales de la contaminación acústica. Una vez se establece la **correspondencia**, se quiere comprobar si el ruido es un **factor influyente** en el desarrollo de cuadros depresivos y por tanto, una ciudad con peor índice de esta contaminación se ve condicionada a un mayor consumo de **fármacos antidepresivos** en su población.
+
+
 
 # Metodología y Resultados
 
@@ -168,6 +166,75 @@ knitr::kable(tabla_ccaa, digits = 3,
 
 
 ```
+
+Una vez se han importado todos los datos relacionados con el medio ambiente, se ha procedido a la elaboración de algunos gráficos representativos de tales variables. Para ello, se ha empleado la herramienta [The R Art Gallery](https://r-graph-gallery.com/), en concreto, el apartado correspondiente a **mapas construidos a partir de GeoJSON**, aprovechando el uso de este recurso importado.
+
+De esta forma, se ha elaborado un **mapa de luz** que permite de manera visual obervar la iluminación territorial durante la noche. Para ello, se ha importado el **mapa base de la Nasa**, en su **versión nocturna del 2012**. Sobre este, se han representado los datos actualizados de esta variable para el territorio español. De esta forma, los datos observados en otros países del mapa son datos reales de la luz nocturna, aunque no relevantes en este estudio.
+
+Para graficar los datos relativos al NO2 y O3 se ha empleado nuevamente los GeoJSON como fuente de datos. No obstante, el mapa empleado en este caso es de **relieve**.
+
+```{r graficar la luz}
+pal <- colorNumeric("magma", domain = log10(luz$mean)) 
+# los datos de Ceuta y Melilla son extremos
+# se emplea el logaritmo para evitar que toda la península se represente igual
+
+leaflet(luz) %>%
+  addTiles() %>%
+  setView(lng = -3.7, lat = 40, zoom = 5) %>%
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") %>%
+  addPolygons(
+    fillColor   = ~pal(log10(mean)),
+    fillOpacity = 0.6,
+    color       = "white", weight = 1,
+    label       = ~paste0(ADM1_NAME, ": ", round(mean, 3))
+  ) %>%
+  addLegend(
+    pal = pal, values = ~log10(mean), title = "Luz nocturna por CA",
+    labFormat = labelFormat(transform = function(x) 10^x, digits = 1),
+    position = "bottomright"
+  )
+```
+
+```{r graficar el No2}
+pal <- colorNumeric("magma", domain = no2$mean)
+
+leaflet(no2) %>%
+  addTiles() %>%
+  setView(lng = -3.7, lat = 40, zoom = 6) %>%
+  addProviderTiles("Esri.WorldTerrain") %>%
+  addPolygons(
+    fillColor   = ~pal(mean),
+    fillOpacity = 0.8,
+    color       = "white", weight = 1,
+    label       = ~paste0(ADM1_NAME, ": ", round(mean, 1), " µmol/m²")
+  ) %>%
+  addLegend(
+    pal = pal, values = ~mean, title = "NO2 (µmol/m²)",
+    position = "bottomleft"
+  )
+```
+
+
+```{r graficar O3}
+pal <- colorNumeric("magma", domain = o3$mean)
+
+leaflet(o3) %>%
+  addTiles() %>%
+  setView(lng = -3.7, lat = 40, zoom = 5) %>%
+  addProviderTiles("Esri.WorldTerrain") %>%
+  addPolygons(
+    fillColor   = ~pal(mean),
+    fillOpacity = 0.8,
+    color       = "white", weight = 1,
+    label       = ~paste0(ADM1_NAME, ": ", round(mean, 3), " mol/m²")
+  ) %>%
+  addLegend(
+    pal = pal, values = ~mean, title = "O3 (mol/m²)",
+    position = "bottomleft"
+  )
+```
+
+
 
 
 ``` {r visualizar salud mental}
@@ -388,6 +455,44 @@ datos %>%
   arrange(desc(Indice_exposicion)) %>%
   head(5) %>%
   kable(digits = 2, caption = "Ejemplo: las 5 comunidades con mayor exposición combinada")
+```
+
+## Procesamiento de datos 
+
+```{r pregunta 1}
+# Seleccionamos las variables necesarias
+datos_p1 <- datos %>%
+  select(Comunidad, Luz, Horas_sueno, Tranquilizantes)
+
+# Comprobamos los datos
+summary(datos_p1)
+```
+```{r grafico pregunta 1}
+ # Load the library
+library(leaflet)
+
+# Note: if you do not already installed it, install it with:
+# install.packages("leaflet")
+
+# Background 1: NASA
+m <- leaflet() %>% 
+   addTiles() %>% 
+   setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
+   addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+m
+ 
+# Background 2: World Imagery
+m <- leaflet() %>% 
+   addTiles() %>% 
+   setView( lng = 2.34, lat = 48.85, zoom = 3 ) %>% 
+   addProviderTiles("Esri.WorldImagery")
+m
+
+# save the widget in a html file if needed.
+# library(htmlwidgets)
+# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/backgroundMapTile.html", width="1000px"))
+
+
 ```
 
 

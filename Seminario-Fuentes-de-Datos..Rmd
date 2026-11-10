@@ -23,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(sf)
 library(dplyr)
 library(readr)
+library(readxl)
 library(knitr)
 library(leaflet)
 ```
@@ -43,10 +44,20 @@ Para garantizar la fiabilidad de las conclusiones obtenidas, todos los datos han
 Cabe aclararse que, la fecha y, por ello, actualidad de los datos no guarda una exacta vinculación entre los datos ambientales y los relativos a la salud. Esto se debe a que los **datos sensibles no son tan accesibles**, y además, tardan más tiempo en ser publicados, por tanto, se han tomado los ficheros más recientes que se encontraban disponibles *(actúan como una buena aproximación de los datos sanitarios actuales)*.
 
 Las fuentes empleadas han sido las siguientes:
+
+
 - [Google Eart engine](https://earthengine.google.com/)
+
+
 - [Instituto Nacional de Estadística](https://www.ine.es/)
+
+
 - [Ministerio de Sanidad](https://www.sanidad.gob.es/estadEstudios/sanidadDatos/home.htm)
+
+
 - [Indicadores clave - Sistema Nacional de Salud, Gobierno de España](https://inclasns.sanidad.gob.es/main.html)
+
+
 
 La siguiente tabla resume qué fichero aporta cada variable, su año y su unidad:
 
@@ -134,16 +145,7 @@ no2 <- st_read("data/NO2_Espana_2023.geojson", quiet = TRUE)
 o3 <- st_read("data/O3_Espana_2023.geojson", quiet = TRUE)
 ```
 
-```{r visualizar contaminantes}
-# Primeras filas de cada tabla
-head(luz)
-head(no2)
-head(o3)
-
-names(luz)
-names(no2)
-names(o3)
-
+```{r tabla-contaminantes}
 tabla_luz <- st_drop_geometry(luz) %>%
   select(Comunidad = ADM1_NAME, Luz_nocturna = mean)
 
@@ -173,7 +175,7 @@ De esta forma, se ha elaborado un **mapa de luz** que permite de manera visual o
 
 Para graficar los datos relativos al NO2 y O3 se ha empleado nuevamente los GeoJSON como fuente de datos. No obstante, el mapa empleado en este caso es de **relieve**.
 
-```{r graficar la luz}
+```{r graficar-luz, fig.align='center'}
 pal <- colorNumeric("magma", domain = log10(luz$mean)) 
 # los datos de Ceuta y Melilla son extremos
 # se emplea el logaritmo para evitar que toda la península se represente igual
@@ -195,7 +197,7 @@ leaflet(luz) %>%
   )
 ```
 
-```{r graficar el No2}
+```{r graficar-No2, fig.align='center'}
 pal <- colorNumeric("magma", domain = no2$mean)
 
 leaflet(no2) %>%
@@ -215,12 +217,12 @@ leaflet(no2) %>%
 ```
 
 
-```{r graficar O3}
+```{r graficar-O3, fig.align='center'}
 pal <- colorNumeric("magma", domain = o3$mean)
 
 leaflet(o3) %>%
   addTiles() %>%
-  setView(lng = -3.7, lat = 40, zoom = 5) %>%
+  setView(lng = -3.7, lat = 40, zoom = 6) %>%
   addProviderTiles("Esri.WorldTerrain") %>%
   addPolygons(
     fillColor   = ~pal(mean),
@@ -237,39 +239,39 @@ leaflet(o3) %>%
 
 
 
-``` {r visualizar salud mental}
-library(readxl)
+``` {r importar-saludMental}
 antidepresivos <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
     col_names = FALSE, col_types = c("text", 
         "skip", "numeric"))
-View(antidepresivos)
+
+knitr::kable(antidepresivos, digits = 3, caption = "Consumo de antidepresivos")
 
 ```
 
-```{r visualizar consumo medicamentos}
-library(readxl)
+```{r importar-consumoMedicamentos}
 tranquilizantes <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "consumo tranquilizantes", range = "B10:D28", 
     col_types = c("text", "skip", "numeric"))
-View(tranquilizantes)
+
+knitr::kable(tranquilizantes, digits = 3, caption = "Consumo de relajantes")
 ```
 
-```{r visualizar ruido molesto}
-library(readxl)
+```{r importar-ruidoMolesto}
 ruido <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
     range = "A6:B24", col_names = FALSE)
-head(ruido)
+
+knitr::kable(ruido, digits = 3, caption = "Ruido molesto")
 ```
 
-```{r visualizar trastornos mentales}
-library(readxl)
+```{r importar-trastornosMentales}
 trastornos <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
-head(trastornos)
+
+knitr::kable(trastornos, digits = 3, caption = "Trastornos metales")
 ```
 
-```{r importar-csv}
+```{r importar-poblacion}
 # Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022)
 poblacion <- data.frame(
   Comunidad = c("Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias",
@@ -282,22 +284,27 @@ poblacion <- data.frame(
                 1531878, 664117, 2208174, 319892, 83117, 85170)
 )
 
+knitr::kable(poblacion, digits = 3, caption = "Poblacion por Comunidades")
+```
+
+```{r importar-depresion}
 depresion <- read_csv2(
   "data/CuadroDepresion_Espana_2022.csv",
   locale = locale(encoding = "Windows-1252"),
   show_col_types = FALSE
 )
 
+knitr::kable(depresion, digits = 3, caption = "Cuadro depresivo")
+```
+
+```{r importar-sueno}
 sueno <- read_csv2(
   "data/Horas de sueño_Espana_2011.csv",
   locale = locale(encoding = "Windows-1252"),
   col_types = cols(.default = col_character()),
   show_col_types = FALSE
 )
-View(depresion)
-View(sueno)
-
-
+knitr::kable(sueno, digits = 3, caption = "Horas de sueño")
 ```
 
 
@@ -315,7 +322,7 @@ Cada fuente "habla un idioma distinto", así que antes de poder comparar las var
 | Variables con escalas muy distintas. | Normalización mín-máx (0-1). |
 | Cobertura territorial distinta. | Análisis con las 17 CCAA. |
 
-### 1. En primer lugar, se va a llevar a cabo la unificación de los nombres de las comunidades autónomas.
+### En primer lugar, se va a llevar a cabo la unificación de los nombres de las comunidades autónomas.
 
 ```{r funcion-nombres}
 normalizar_ccaa <- function(nombre) {
@@ -345,7 +352,16 @@ normalizar_ccaa <- function(nombre) {
 }
 ```
 
-### 2. A continuación, se va a proceder a dejar todas las tablas con la misma estructura.
+### Modificación en el tipo de dato importado en las horas de sueño
+La variable de interés importada en el fichero correspondiente a las horas de sueño es el total. No obstante, este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
+
+```{r sueno-formatoNumerico}
+sueno_numerico <- sueno %>%
+  select(Comunidad = 3, Horas_sueno = 5) %>%
+  mutate(Horas_sueno = as.numeric(gsub(",", ".", Horas_sueno)))
+```
+
+### A continuación, se va a proceder a dejar todas las tablas con la misma estructura.
 
 Cada tabla se reduce a dos columnas: `Comunidad` y el valor de la variable. Con `select()` se lleva a cabo la elección y el renombrado de las columnas y con `mutate()` se aplica la función anterior a los nombres.
 
@@ -378,8 +394,7 @@ tabla_depresion <- depresion %>%
   select(Comunidad = 2, Depresion_miles = 4) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
 
-tabla_sueno <- sueno %>%
-  select(Comunidad = 3, Horas_sueno = 5) %>%
+tabla_sueno <- sueno_numerico %>%
   filter(!is.na(Comunidad)) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
 
@@ -388,7 +403,8 @@ tabla_poblacion <- poblacion %>%
 
 ```
 
-### 3. Posteriormente, se van a convertir las unidades.
+
+### Posteriormente, se van a convertir las unidades.
 
 - **NO2:** el valor original en mol/m² tiene muchos ceros. Se va a multiplicar por 1.000.000, quedando expresado en **µmol/m²**, más fácil de leer.
 - **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono (1 DU = 4,4615 x 10⁻⁴ mol/m²).
@@ -402,15 +418,15 @@ tabla_ambiente <- tabla_luz %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad),
         NO2 = NO2 * 1e6,
         O3 = O3 / 4.4615e-4)
+
 # Depresión: de miles de personas a porcentaje de la población.
 tabla_depresion <- tabla_depresion %>%
   left_join(tabla_poblacion, by = "Comunidad") %>%
   mutate(Depresion_pct = Depresion_miles * 1000/Poblacion*100)
 
-head(tabla_depresion)
 ```
 
-### 4. Construcción de la tabla de referencia.
+### Construcción de la tabla de referencia.
 
 Se va a unir todo en una única tabla llamada `datos`, en la que cada fila se corresponde con una comunidad autónoma. Cabe destacar, que se van a excluir **Ceuta y Melilla** porque: no aparecen en los datos de trastornos mentales, en los datos de 2001 aparecen sumadas en una sola fila y, al ser territorios muy pequeños, la media de los datos de satélite puede ser poco significativa.
 
@@ -460,39 +476,48 @@ datos %>%
 ## Procesamiento de datos 
 
 ```{r pregunta 1}
-# Seleccionamos las variables necesarias
-datos_p1 <- datos %>%
-  select(Comunidad, Luz, Horas_sueno, Tranquilizantes)
+datos %>%
+  select(Comunidad, Luz, Horas_sueno, Tranquilizantes) %>%
+  arrange(desc(Luz))
 
-# Comprobamos los datos
-summary(datos_p1)
+# Medias de las comunidades con más luz que la media frente al resto
+datos %>%
+  mutate(Grupo = case_when(Luz > mean(Luz) ~ "Más luz",
+                           .default = "Menos luz")) %>%
+  group_by(Grupo) %>%
+  summarise(Comunidades = n(),
+            Sueno_medio = mean(Horas_sueno, na.rm = TRUE),
+            Tranq_medio = mean(Tranquilizantes, na.rm = TRUE))
 ```
-```{r grafico pregunta 1}
- # Load the library
-library(leaflet)
 
-# Note: if you do not already installed it, install it with:
-# install.packages("leaflet")
+```{r pregunta 2}
+datos %>%
+  select(Comunidad, Indice_exposicion, Trastornos, Depresion_pct) %>%
+  arrange(desc(Indice_exposicion))
 
-# Background 1: NASA
-m <- leaflet() %>% 
-   addTiles() %>% 
-   setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
-   addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
-m
- 
-# Background 2: World Imagery
-m <- leaflet() %>% 
-   addTiles() %>% 
-   setView( lng = 2.34, lat = 48.85, zoom = 3 ) %>% 
-   addProviderTiles("Esri.WorldImagery")
-m
+# Comunidades con luz Y ruido por encima de la media frente al resto
+datos %>%
+  mutate(Grupo = case_when(Luz > mean(Luz) & Ruido > mean(Ruido) ~ "Alta luz y alto ruido",
+                           .default = "Resto")) %>%
+  group_by(Grupo) %>%
+  summarise(Comunidades = n(),
+            Trastornos_medio = mean(Trastornos, na.rm = TRUE),
+            Depresion_media  = mean(Depresion_pct, na.rm = TRUE))
+```
 
-# save the widget in a html file if needed.
-# library(htmlwidgets)
-# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/backgroundMapTile.html", width="1000px"))
+```{r pregunta 3}
+datos %>%
+  select(Comunidad, Ruido, Depresion_pct, Antidepresivos) %>%
+  arrange(desc(Ruido))
 
-
+# Medias de las comunidades con más ruido molesto que la media frente al resto
+datos %>%
+  mutate(Grupo = case_when(Ruido > mean(Ruido) ~ "Más ruido molesto",
+                           .default = "Menos ruido molesto")) %>%
+  group_by(Grupo) %>%
+  summarise(Comunidades = n(),
+            Depresion_media = mean(Depresion_pct, na.rm = TRUE),
+            Antidep_medio   = mean(Antidepresivos, na.rm = TRUE))
 ```
 
 

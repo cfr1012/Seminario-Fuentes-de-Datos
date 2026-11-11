@@ -109,3 +109,8 @@ caption {
   font-weight: bold;
   text-align: center;
 }
+/* MAPAS INTERACTIVOS (leaflet): CENTRADOS */
+.html-widget {
+  margin-left: auto;
+  margin-right: auto;
+}

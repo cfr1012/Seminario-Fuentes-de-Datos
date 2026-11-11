@@ -120,9 +120,6 @@ Esta primera pregunta tiene como objetivo estudiar el impacto que tiene la prese
 Esta segunda pregunta quiere vincular los fatores contaminantes con el deterioro del estado de salud mental. El cuerpo humano está formado por **múltiples receptores**, vinculados a los **5 sentidos**, que captan información de manera constante del exterior y permiten actuar acorde a la misma. Sin embargo, el desarrollo urbano actual ha derivado en una **sobre-estimulación de estos receptores**. El **ruido** y la **luz** son factores ambientales que permanecen **presentes todo el día** *(incluso por la noche)*, llegando a sobrecargar a nuestros receptores *(aunque en la mayoría de las ocasiones no seamos realmente consciente de ello)*. Esta sobrecarga afecta directamente a **nivel neurológico**, ya que todo esta información debe ser procesada de alguna forma por el cerebro. Por ello, se quiere observar el efecto de estos contaminantes en la **prevalencia del deterioro del estado de la salud mental** y, en consecuencia con el desarrollo de **trastornos mentales**.
 
 
-
-
-
 **PREGUNTA 3: ¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
 Esta última pregunta se centra en el desarrollo de un trastorno mental concreto, la **depresión**. Además de los medidores objetivos de las variables físicas vinculadas a la **contaminación acústica**, resulta de gran relevancia conocer la **percepción poblacional** de la misma. No es lo mismo decir que en una ciudad hay ruido, a que los habitantes de la misma **consideren molesto** el mismo en el **interior de sus hogares**. Es decir, se van a emplear datos que reflejan el **porcentaje** de cada Comunidad Autónoma que declara que el **ruido** procedente del **exterior de su vivienda** es **molesto en la misma**. Se busca comprobar la concordancia de la **percepción pública** con los datos reales de la contaminación acústica. Una vez se establece la **correspondencia**, se quiere comprobar si el ruido es un **factor influyente** en el desarrollo de cuadros depresivos y por tanto, una ciudad con peor índice de esta contaminación se ve condicionada a un mayor consumo de **fármacos antidepresivos** en su población.
@@ -246,7 +243,7 @@ antidepresivos <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xl
     col_names = FALSE, col_types = c("text", 
         "skip", "numeric"))
 
-knitr::kable(antidepresivos, digits = 3, caption = "Consumo de antidepresivos")
+knitr::kable(antidepresivos, digits = 3, col.names = c("Comunidad autónoma", "Antidepresivos (por 100 hab.)"), caption = "Consumo de antidepresivos (2001)")
 
 ```
 
@@ -255,21 +252,21 @@ tranquilizantes <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.x
     sheet = "consumo tranquilizantes", range = "B10:D28", 
     col_types = c("text", "skip", "numeric"))
 
-knitr::kable(tranquilizantes, digits = 3, caption = "Consumo de relajantes")
+knitr::kable(tranquilizantes, digits = 3, col.names = c("Comunidad autónoma", "Tranquilizantes (por 100 hab.)"), caption = "Consumo de tranquilizantes, relajantes o pastillas para dormir (2001)")
 ```
 
 ```{r importar-ruidoMolesto}
 ruido <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
     range = "A6:B24", col_names = FALSE)
 
-knitr::kable(ruido, digits = 3, caption = "Ruido molesto")
+knitr::kable(ruido, digits = 3, col.names = c("Comunidad autónoma", "Ruido exterior molesto (% población)"), caption = "Población que considera molesto el ruido exterior (2023)")
 ```
 
 ```{r importar-trastornosMentales}
 trastornos <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
 
-knitr::kable(trastornos, digits = 3, caption = "Trastornos metales")
+knitr::kable(trastornos, digits = 3, col.names = c("Comunidad autónoma", "Trastornos mentales (%)"), caption = "Prevalencia registrada de trastornos mentales (2023)")
 ```
 
 ```{r importar-poblacion}
@@ -485,7 +482,7 @@ A continuación, se encuentra una función que permite calcular la correlación 
 correlacion <- function(x,y) {
   prueba <- cor.test(x, y, method = "spearman", exact = FALSE)
   c(rho = round(unname(prueba$estimate), 2), 
-    p-valor = round(prueba$p.value, 3))
+    p_valor = round(prueba$p.value, 3))
 }
 ```
 

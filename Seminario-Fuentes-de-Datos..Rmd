@@ -478,6 +478,25 @@ datos %>%
 ```
 
 ## Procesamiento de datos 
+
+A continuación, se encuentra una función que permite calcular la correlación de Spearman entre dos variables y retorna el rho y el p-valor redondeados. Dicha función se utilizará para responder las preguntas correspondientes. 
+
+```{r funcion-correlacion}
+correlacion <- function(x,y) {
+  prueba <- cor.test(x, y, method = "spearman", exact = FALSE)
+  c(rho = round(unname(prueba$estimate), 2), 
+    p-valor = round(prueba$p.value, 3))
+}
+```
+
+
+
+
+
+
+
+
+
 ### Primera pregunta
 
 **¿Una mayor tasa de contaminación lumínica está directamente vinculada a una interrupción del ciclo circadiano que deriva en el consumo de medicamentos y derivados para conciliar el sueño?**

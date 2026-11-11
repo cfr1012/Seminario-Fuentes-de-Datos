@@ -114,3 +114,8 @@ caption {
   margin-left: auto;
   margin-right: auto;
 }
+/* SUBAPARTADOS (###) DEL MISMO COLOR QUE LOS TÍTULOS */
+.section h3,
+.section h4 {
+  color: #512A75;
+}

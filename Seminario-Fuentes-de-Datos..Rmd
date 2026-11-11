@@ -27,6 +27,7 @@ library(readxl)
 library(knitr)
 library(leaflet)
 library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = "center") # Centrado de gráficos.
 ```
 
 # Introducción
@@ -200,20 +201,20 @@ leaflet(luz) %>%
 no2 <- no2 %>%
   mutate(NO2_umol = mean * 1e6)
 
-pal <- colorNumeric("magma", domain = no2$mean)
+pal <- colorNumeric("magma", domain = no2$NO2_umol)
 
 leaflet(no2) %>%
   addTiles() %>%
   fitBounds(lng1 = -18.5, lat1 = 27.5, lng2 = 4.5, lat2 = 44) %>%
   addProviderTiles("Esri.WorldTerrain") %>%
   addPolygons(
-    fillColor   = ~pal(mean),
+    fillColor   = ~pal(NO2_umol),
     fillOpacity = 0.8,
     color       = "white", weight = 1,
-    label       = ~paste0(ADM1_NAME, ": ", round(mean, 1), " µmol/m²")
+    label       = ~paste0(ADM1_NAME, ": ", round(NO2_umol, 1), " µmol/m²")
   ) %>%
   addLegend(
-    pal = pal, values = ~mean, title = "NO2 (µmol/m²)",
+    pal = pal, values = ~ NO2_umol, title = "NO2 (µmol/m²)",
     position = "bottomleft"
   )
 ```
@@ -617,7 +618,7 @@ datos_indice %>%
   kable(digits = 2, col.names = c("Grupo", "Nº de comunidades", "Trastornos mentales (media)", "Depresion (media)", "Depresión (mediana)"), caption = "Comparación entre comunidades con más y menos exposición combinada")
 ```
 
-```{r pregunta2-cajas, fig.show="hold", out.width="50%"}
+```{r pregunta2-cajas, fig.show="hold", out.width="50%", fig.align="default"}
 ggplot(datos_indice, aes(x = Grupo_indice, y = Trastornos)) +
   geom_boxplot(fill = "purple", alpha = 0.2) +
   labs(x = "Exposición combinada",
@@ -633,7 +634,7 @@ ggplot(datos_indice, aes(x = Grupo_indice, y = Depresion_pct)) +
 
 Finalmente, se representan los gráficos de dispersión y se calculan las correlaciones:
 
-```{r pregunta2-dispersion, fig.show="hold", out.width="50%"}
+```{r pregunta2-dispersion, fig.show="hold", out.width="50%", fig.align="default"}
 ggplot(datos, aes(x = Indice_exposicion, y = Trastornos)) +
   geom_point(colour = "purple", size = 3) +
   geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
@@ -718,7 +719,7 @@ datos_ruido %>%
   kable(digits = 2, col.names = c("Grupo", "Nº de comunidades", "NO2 (media)", "Depresión (media)", "Depresión (mediana)", "Antidepresivos (media)"), caption = "Comparación entre comunidades con más y menos ruido molesto")
 ```
 
-```{r pregunta3-cajas, fig.show="hold", out.width="50%"}
+```{r pregunta3-cajas, fig.show="hold", out.width="50%", fig.align="default"}
 ggplot(datos_ruido, aes(x = Grupo_ruido, y = Depresion_pct)) +
   geom_boxplot(fill = "purple", alpha = 0.2) +
   labs(x = "Ruido molesto",

@@ -649,6 +649,85 @@ data.frame(
 
 **¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
+Esta pregunta se va a abordar en dos partes. En primer lugar, se va a realizar una comprobación acerca de si la **percepción del ruido** coincide con la contaminación medida, utilizando, para ello, el **NO2** como indicador del tráfico (principal fuente de ruido urbano). A continuación, se va a estudir si precisamente ese ruido percibido se relaciona con la **depresión** o/y con el **consumo de antidepresivos**.
+
+```{r pregunta3-ordenacionRuido}
+datos %>%
+  select(Comunidad, Ruido, NO2, Depresion_pct, Antidepresivos) %>%
+  arrange(desc(Ruido)) %>%
+  kable(digits = 2, col.names = c("Comunidad", "Ruido molesto (%)", "NO2 (µmol/m²)", "Depresión (%)", "Antidepresivos (por 100 hab.)"), caption = "Comunidades autónomas ordenadas por ruido molesto")
+
+```
+
+```{r pregunta3-mediaDesviacion}
+datos %>%
+  summarise(Ruido_media = mean(Ruido),
+            Ruido_sd = sd(Ruido),
+            NO2_media = mean(NO2),
+            NO2_sd = sd(NO2),
+            Antidepresivos_media = mean(Antidepresivos, na.rm = TRUE),
+            Antidepresivos_sd = sd(Antidepresivos, na.rm = TRUE)) %>%
+  kable(digits = 2, caption = "Media y desviación típica (sd) de las variables de la pregunta 3")
+```
+
+**PARTE 1: ¿hay coincidencia entre el ruido percibido y el NO2?**
+
+```{r pregunta3-ruidoNO2}
+ggplot(datos, aes(x = NO2, y = Ruido)) +
+  geom_point(colour = "purple", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
+  geom_text(aes(label = Comunidad), size = 3, vjust = -0.8, check_overlap = TRUE) +
+  scale_x_continuous(expand = expansion(mult = 0.15)) +
+  labs(x = "NO2 (µmol/m²)", y = "Ruido exterior molesto (%)",
+       title = "Ruido percibido y NO2 (tráfico)")
+```
+
+**PARTE 2: ruido percibido, depresión y antidepresivos.** Se van a separar las comunidad autónomas cuyo porcentaje de ruido molesto sea **superior** e **inferior a la media**:
+
+```{r pregunta3-grupos}
+datos_ruido <- datos %>%
+  mutate(Grupo_ruido = case_when(Ruido > mean(Ruido) ~ "Ruido superior a la media", .default = "Ruido inferior o igual a la media"))
+
+datos_ruido %>%
+  group_by(Grupo_ruido) %>%
+  summarise(N_comunidades = n(),
+            NO2_media = mean(NO2),
+            Depresion_media = mean(Depresion_pct),
+            Depresion_mediana = median(Depresion_pct),
+            Antidepresivos_media = mean(Antidepresivos, na.rm = TRUE)) %>%
+  kable(digits = 2, col.names = c("Grupo", "Nº de comunidades", "NO2 (media)", "Depresión (media)", "Depresión (mediana)", "Antidepresivos (media)"), caption = "Comparación entre comunidades con más y menos ruido molesto")
+```
+
+```{r pregunta3-cajas, fig.show="hold", out.width="50%"}
+ggplot(datos_ruido, aes(x = Grupo_ruido, y = Depresion_pct)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Ruido molesto",
+       y = "Cuadro depresivo mayor (%)",
+       title = "Depresión según el ruido percibido")
+
+ggplot(datos_ruido, aes(x = Grupo_ruido, y = Antidepresivos)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Ruido molesto",
+       y = "Antidepresivos (por 100 hab.)",
+       title = "Consumo de antidepresivos según el ruido percibido")
+```
+
+```{r pregunta3-correlacion}
+data.frame(
+  Relacion = c("Ruido molesto - NO2",
+               "Ruido molesto - Depresión",
+               "Ruido molesto - Antidepresivos"),
+  rbind(correlacion(datos$Ruido, datos$NO2),
+        correlacion(datos$Ruido, datos$Depresion_pct),
+        correlacion(datos$Ruido, datos$Antidepresivos))
+) %>%
+  kable(col.names = c("Relación", "rho de Spearman", "p-valor"),
+        caption = "Correlaciones de la pregunta 3")
+```
+
+**Respuesta a la pregunta 3.** La **percepción del ruido no coincide con el NO2** (rho = 0,16; no significativa): Canarias es la comunidad donde más molesta el ruido y, sin embargo, la que menos NO2 presenta, mientras que Madrid, con el NO2 más alto, tiene bastante menos ruido molesto que Canarias o Baleares (30% frente a casi un 39%). Esto indica que la molestia por el ruido no depende únicamente del tráfico, sino también de otros factores como el turismo, el ocio nocturno o la densidad de viviendas. Por el contrario, el **ruido percibido sí se relaciona con la depresión**: aquellas comunidades con más ruido molesto presentan más depresión (mediana del 6,4% frente al 4,4%), con una correlación **fuerte y significativa** (rho = 0,62; p = 0,008). Con el **consumo de antidepresivos** la relación es **moderada** (rho = 0,49) y queda **muy cerca de ser significativa** (p = 0,057), teniendo en cuenta que estos datos son del año 2001. Por lo tanto, es la **percepción del ruido**, y no el NO2, la que se asocia con una mayor prevalencia de depresión. 
+
+
 
 
 # Conclusiones generales

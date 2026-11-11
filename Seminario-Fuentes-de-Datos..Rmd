@@ -196,11 +196,15 @@ leaflet(luz) %>%
 ```
 
 ```{r graficar-No2, fig.align='center'}
+# Se pasa el NO2 de mol/m² a µmol/m².
+no2 <- no2 %>%
+  mutate(NO2_umol = mean * 1e6)
+
 pal <- colorNumeric("magma", domain = no2$mean)
 
 leaflet(no2) %>%
   addTiles() %>%
-  setView(lng = -3.7, lat = 40, zoom = 6) %>%
+  fitBounds(lng1 = -18.5, lat1 = 27.5, lng2 = 4.5, lat2 = 44) %>%
   addProviderTiles("Esri.WorldTerrain") %>%
   addPolygons(
     fillColor   = ~pal(mean),

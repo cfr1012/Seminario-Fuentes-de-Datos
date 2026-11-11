@@ -560,6 +560,91 @@ ggplot(datos_grafico, aes(x = Grupo, y = Tranquilizantes)) +
 
 **¿La exposición simultánea a altos niveles de contaminación acústica y lumínica se correlacionan con una peor salud mental?**
 
+Para estudiar la exposición **simultánea** se utiliza el **índice de exposición combinada** calculado en la normalización mín-máx, que resume en un único valor de 0 a 1 la luz nocturna y el ruido de cada comunidad autónoma. La salud mental se mide con dos variables: la **prevalencia de trastornos mentales** y el **porcentaje de población con cuadro depresivo mayor**.
+
+En primer lugar, se van a ordenar las comunidades autónomas de **mayor a menor exposición combinada**:
+
+```{r pregunta2-ordenacionIndice}
+datos %>%
+  select(Comunidad, Luz, Ruido, Indice_exposicion, Trastornos, Depresion_pct) %>%
+  arrange(desc(Indice_exposicion)) %>%
+  kable(digits = 2, col.names = c("Comunidad", "Luz (nW/cm²/sr)", "Ruido molesto (%)", "Índice combinado (0-1)", "Trastornos mentales (%)", "Depresión (%)"),
+        caption = "Comunidades autónomas ordenadas por exposición combinada")
+```
+
+```{r pregunta2-graficoIndice}
+ggplot(datos, aes(x = reorder(Comunidad, Indice_exposicion),
+                  y = Indice_exposicion)) + geom_bar(stat = "identity", fill = "purple") + coord_flip() + labs(x = "Comunidad autónoma", y = "Índice de exposición combinada (0 = mínima, 1 = máxima)", title = "Exposición simultánea a luz nocturna y ruido")
+```
+
+A continuación, se calculan la **media** y la **desviación típica** de las variables:
+
+```{r pregunta2-mediaDesviacion}
+datos %>%
+  summarise(Indice_media = mean(Indice_exposicion), Indice_sd = sd(Indice_exposicion), Trastornos_media = mean(Trastornos), Trastornos_sd = sd(Trastornos), Depresion_media = mean(Depresion_pct), Depresion_sd = sd(Depresion_pct)) %>%
+  kable(digits = 2, caption = "Media y desviación típica (sd) de las variables de la pregunta 2")
+```
+
+Tal como se ha realizado en la pregunta previa, se separan aquellas comunidades con un índice **superior** e **inferior a la media**. En el caso de la depresión se calcula también la **mediana** (el valor central), ya que la Comunidad Valenciana (18%) eleva mucho la media de su grupo.
+
+```{r pregunta2-grupos}
+datos_indice <- datos %>%
+  mutate(Grupo_indice = case_when(Indice_exposicion > mean(Indice_exposicion) ~ "Exposición superior a la media", .default = "Exposición inferior o igual a la media"))
+
+datos_indice %>%
+  group_by(Grupo_indice) %>%
+  summarise(N_comunidades = n(), Trastornos_media = mean(Trastonos), Depresion_media = mean(Depresion_pct), Depresion_mediana = median(Depresion_pct)) %>%
+  kable(digits = 2, col.names = c("Grupo", "Nº de comunidades", "Trastornos mentales (media)", "Depresion (media)", "Depresión (mediana)"), caption = "Comparación entre comunidades con más y menos exposición combinada")
+```
+
+```{r pregunta2-cajas, fig.show="hold", out.width="50%"}
+ggplot(datos_indice, aes(x = Grupo_indice, y = Trastornos)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Exposición combinada",
+       y = "Trastornos mentales (%)",
+       title = "Trastornos mentales según la exposición")
+
+ggplot(datos_indice, aes(x = Grupo_indice, y = Depresion_pct)) +
+  geom_boxplot(fill = "purple", alpha = 0.2) +
+  labs(x = "Exposición combinada",
+       y = "Cuadro depresivo mayor (%)",
+       title = "Depresión según la exposición")
+```
+
+Finalmente, se representan los gráficos de dispersión y se calculan las correlaciones:
+
+```{r pregunta2-dispersion, fig.show="hold", out.width="50%"}
+ggplot(datos, aes(x = Indice_exposicion, y = Trastornos)) +
+  geom_point(colour = "purple", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
+  geom_text(aes(label = Comunidad), size = 3, vjust = -0.8, check_overlap = TRUE) +
+  scale_x_continuous(expand = expansion(mult = 0.15)) +
+  labs(x = "Índice de exposición combinada", y = "Trastornos mentales (%)",
+       title = "Exposición combinada y trastornos mentales")
+
+ggplot(datos, aes(x = Indice_exposicion, y = Depresion_pct)) +
+  geom_point(colour = "purple", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
+  geom_text(aes(label = Comunidad), size = 3, vjust = -0.8, check_overlap = TRUE) +
+  scale_x_continuous(expand = expansion(mult = 0.15)) +
+  labs(x = "Índice de exposición combinada", y = "Cuadro depresivo mayor (%)",
+       title = "Exposición combinada y depresión")
+```
+
+```{r pregunta2-correlacion}
+data.frame(
+  Relacion = c("Índice combinado - Trastornos mentales",
+               "Índice combinado - Depresión"),
+  rbind(correlacion(datos$Indice_exposicion, datos$Trastornos),
+        correlacion(datos$Indice_exposicion, datos$Depresion_pct))
+) %>%
+  kable(col.names = c("Relación", "rho de Spearman", "p-valor"),
+        caption = "Correlaciones de la pregunta 2")
+```
+
+**Respuesta a la pregunta 2.** Las comunidades con mayor exposición simultánea a luz y ruido son **Madrid, Canarias y Baleares**, y las de menor exposición, **Navarra, Castilla-La Mancha y Extremadura**. Las comunidades más expuestas presentan peores valores en las dos variables de salud mental: más **trastornos mentales** (20,7 % frente a 14,3 %) y más **depresión** (mediana del 6,4 % frente al 4,8 %). La correlación con la **depresión es fuerte y significativa** (rho = 0,7; p = 0,002), mientras que con los **trastornos mentales es moderada pero no significativa** (rho = 0,39; p = 0,117). Por tanto, **los datos apoyan parcialmente la hipótesis**: la exposición simultánea a luz y ruido se asocia con una mayor prevalencia de depresión, pero no de forma clara con el conjunto de trastonos mentales. Destaca la **Comunidad Valenciana**, con una depresión muy superior al resto (18%) a pesar de tener una exposición intermedia, lo que indica que intervienen otros factores no tenidos en cuenta. 
+
+
 ### Tercera pregunta
 
 **¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**

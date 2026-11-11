@@ -593,7 +593,7 @@ datos_indice <- datos %>%
 
 datos_indice %>%
   group_by(Grupo_indice) %>%
-  summarise(N_comunidades = n(), Trastornos_media = mean(Trastonos), Depresion_media = mean(Depresion_pct), Depresion_mediana = median(Depresion_pct)) %>%
+  summarise(N_comunidades = n(), Trastornos_media = mean(Trastornos), Depresion_media = mean(Depresion_pct), Depresion_mediana = median(Depresion_pct)) %>%
   kable(digits = 2, col.names = c("Grupo", "Nº de comunidades", "Trastornos mentales (media)", "Depresion (media)", "Depresión (mediana)"), caption = "Comparación entre comunidades con más y menos exposición combinada")
 ```
 

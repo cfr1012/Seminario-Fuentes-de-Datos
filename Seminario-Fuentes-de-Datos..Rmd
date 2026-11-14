@@ -135,9 +135,11 @@ Esta última pregunta se centra en el desarrollo de un trastorno mental concreto
 
 # Metodología y Resultados
 
-La metodología se divide en tres fases: **(1)** importación de los datos, **(2)** normalización para que todas las fuentes sean comparables y **(3)** análisis de cada pregunta mediante mapas, gráficos de dispersión y correlaciones. 
+La metodología se divide en tres fases: **(1)** **importación** de los datos, **(2)** **normalización** para que todas las fuentes sean comparables y **(3)** **análisis** de cada pregunta mediante mapas, gráficos de dispersión y correlaciones. 
 
 ## Importación de los datos
+
+### Datos ambientales
 
 Todos los ficheros se guardan en la carpeta `data/` del repositorio. Cada fuente tiene un formato distinto, por lo que se usa la función adecuada para cada uno: `st_read()` para los GeoJSON, `read_excel()` para los Excel y `read_csv2()` para los CSV.
 
@@ -160,13 +162,13 @@ tabla_no2 <- st_drop_geometry(no2) %>%
 tabla_o3 <- st_drop_geometry(o3) %>%
   select(Comunidad = ADM1_NAME, O3 = mean)
 
-tabla_ccaa <- tabla_luz %>%
+tabla_ccaa_contaminantes <- tabla_luz %>%
   left_join(tabla_no2, by = "Comunidad") %>%
   left_join(tabla_o3, by = "Comunidad") %>%
   mutate(NO2 = NO2 * 1e6) %>%
   arrange(Comunidad)
 
-knitr::kable(tabla_ccaa, digits = 3,
+knitr::kable(tabla_ccaa_contaminantes, digits = 3,
              col.names = c("Comunidad autónoma", "Luz nocturna",
                            "NO2 (µmol/m²)", "O3 (mol/m²)"),
              caption = "Valores medios por comunidad autónoma (2023)")
@@ -198,9 +200,10 @@ leaflet(luz) %>%
   addLegend(
     pal = pal, values = ~log10(mean), title = "Luz nocturna por CA",
     labFormat = labelFormat(transform = function(x) 10^x, digits = 1),
-    position = "bottomright"
+    position = "bottomleft"
   )
 ```
+
 
 ```{r graficar-No2, fig.align='center'}
 # Se pasa el NO2 de mol/m² a µmol/m².
@@ -211,7 +214,7 @@ pal <- colorNumeric("magma", domain = no2$NO2_umol)
 
 leaflet(no2) %>%
   addTiles() %>%
-  fitBounds(lng1 = -18.5, lat1 = 27.5, lng2 = 4.5, lat2 = 44) %>%
+  setView(lng = -3.7, lat = 40, zoom = 6) %>%
   addProviderTiles("Esri.WorldTerrain") %>%
   addPolygons(
     fillColor   = ~pal(NO2_umol),
@@ -246,13 +249,12 @@ leaflet(o3) %>%
 ```
 
 
-
+### Datos sanitarios
 
 ``` {r importar-saludMental}
 antidepresivos <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
-    col_names = FALSE, col_types = c("text", 
-        "skip", "numeric"))
+    col_names = FALSE, col_types = c("text", "skip", "numeric"))
 
 knitr::kable(antidepresivos, digits = 3, col.names = c("Comunidad autónoma", "Antidepresivos (por 100 hab.)"), caption = "Consumo de antidepresivos (2001)")
 
@@ -280,22 +282,6 @@ trastornos <- read_excel("data/TrastornosMentales_Espana_2023.xls",
 knitr::kable(trastornos, digits = 3, col.names = c("Comunidad autónoma", "Trastornos mentales (%)"), caption = "Prevalencia registrada de trastornos mentales (2023)")
 ```
 
-```{r importar-poblacion}
-# Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022)
-poblacion <- data.frame(
-  Comunidad = c("Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias",
-                "Cantabria", "Castilla y León", "Castilla-La Mancha", "Cataluña",
-                "Comunitat Valenciana", "Extremadura", "Galicia", "Comunidad de Madrid",
-                "Región de Murcia", "Navarra", "País Vasco", "La Rioja", "Ceuta", "Melilla"),
-  Poblacion = c(8500187, 1326315, 1004686, 1176659, 2177701,
-                585402, 2372640, 2053328, 7792611,
-                5097967, 1054776, 2690464, 6750336,
-                1531878, 664117, 2208174, 319892, 83117, 85170)
-)
-
-knitr::kable(poblacion, digits = 3, caption = "Poblacion por Comunidades")
-```
-
 ```{r importar-depresion}
 depresion <- read_csv2(
   "data/CuadroDepresion_Espana_2022.csv",
@@ -316,12 +302,28 @@ sueno <- read_csv2(
 knitr::kable(sueno, digits = 3, caption = "Horas de sueño")
 ```
 
+###Datos poblacionales
 
+```{r importar-poblacion}
+# Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022)
+poblacion <- data.frame(
+  Comunidad = c("Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias",
+                "Cantabria", "Castilla y León", "Castilla-La Mancha", "Cataluña",
+                "Comunitat Valenciana", "Extremadura", "Galicia", "Comunidad de Madrid",
+                "Región de Murcia", "Navarra", "País Vasco", "La Rioja", "Ceuta", "Melilla"),
+  Poblacion = c(8500187, 1326315, 1004686, 1176659, 2177701,
+                585402, 2372640, 2053328, 7792611,
+                5097967, 1054776, 2690464, 6750336,
+                1531878, 664117, 2208174, 319892, 83117, 85170)
+)
+
+knitr::kable(poblacion, digits = 3, caption = "Poblacion por Comunidades")
+```
 
 
 ## Normalización de los datos
 
-Cada fuente "habla un idioma distinto", así que antes de poder comparar las variables hay que **normalizarlas**. Se han detectado los siguientes problemas:
+Cada fuente *"habla un idioma distinto"*, así que antes de poder comparar las variables hay que **normalizarlas**. Se han detectado los siguientes problemas:
 
 |Problema |  Solución |
 |:--|:--|
@@ -332,7 +334,7 @@ Cada fuente "habla un idioma distinto", así que antes de poder comparar las var
 | Cobertura territorial distinta. | Análisis con las 17 CCAA. |
 
 ### Unificación de nombres
-En primer lugar, se va a llevar a cabo la unificación de los nombres de las comunidades autónomas.
+En primer lugar, se va a llevar a cabo la unificación de los nombres de las Comunidades Autónomas.
 
 ```{r funcion-nombres}
 normalizar_ccaa <- function(nombre) {
@@ -363,7 +365,7 @@ normalizar_ccaa <- function(nombre) {
 ```
 
 ### Modificación tipos de datos importados
-La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una incorrección en el tipo de dato relativo a las horas de sueño totales. Este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
+La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una **incorrección en el tipo de dato** relativo a las **horas de sueño** totales. Este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
 
 ```{r sueno-formatoNumerico}
 sueno_numerico <- sueno %>%
@@ -409,6 +411,7 @@ tabla_sueno <- sueno_numerico %>%
   filter(!is.na(Comunidad)) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
 
+# VARIABLES POBLACIONALES
 tabla_poblacion <- poblacion %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
 
@@ -419,7 +422,9 @@ tabla_poblacion <- poblacion %>%
 Posteriormente, se van a convertir las unidades, siguiendo los siguientes parámetros:
 
 - **NO2:** el valor original en mol/m² tiene muchos ceros. Se va a multiplicar por 1.000.000, quedando expresado en **µmol/m²**, más fácil de leer.
-- **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono (1 DU = 4,4615 x 10⁻⁴ mol/m²).
+
+- **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono *(1 DU = 4,4615 x 10⁻⁴ mol/m²)*.
+
 - **Depresión:** el INE da el número de personas en miles. Una comunidad grande siempre tendrá más casos que una pequeña, por lo que se va a dividir entre la población para obtener el **porcentaje de población** con un cuadro depresivo mayor. 
 
 ```{r unidades}

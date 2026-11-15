@@ -148,9 +148,9 @@ Todos los ficheros se guardan en la carpeta `data/` del repositorio. Cada fuente
 ```{r importar-geojson}
 # Los GeoJSON contienen la forma de cada comunidad autónoma y el valor medio de la variable en 2023 (calculado en Google Earth Engine).
 
-luz <- st_read("data/Luz_Nocturna_Espana_2023.geojson", quiet = TRUE)
-no2 <- st_read("data/NO2_Espana_2023.geojson", quiet = TRUE)
-o3 <- st_read("data/O3_Espana_2023.geojson", quiet = TRUE)
+luz <- st_read("data/ambientales/Luz_Nocturna_Espana_2023.geojson", quiet = TRUE)
+no2 <- st_read("data/ambientales/NO2_Espana_2023.geojson", quiet = TRUE)
+o3 <- st_read("data/ambientales/O3_Espana_2023.geojson", quiet = TRUE)
 ```
 
 ```{r tabla-contaminantes}
@@ -253,7 +253,7 @@ leaflet(o3) %>%
 ### Datos sanitarios
 
 ``` {r importar-saludMental}
-antidepresivos <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+antidepresivos <- read_excel("data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
     col_names = FALSE, col_types = c("text", "skip", "numeric"))
 
@@ -262,7 +262,7 @@ knitr::kable(antidepresivos, digits = 3, col.names = c("Comunidad autónoma", "A
 ```
 
 ```{r importar-consumoMedicamentos}
-tranquilizantes <- read_excel("data/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
+tranquilizantes <- read_excel("data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "consumo tranquilizantes", range = "B10:D28", 
     col_types = c("text", "skip", "numeric"))
 
@@ -270,14 +270,14 @@ knitr::kable(tranquilizantes, digits = 3, col.names = c("Comunidad autónoma", "
 ```
 
 ```{r importar-ruidoMolesto}
-ruido <- read_excel("data/RuidoMolesto_Espana_2023.xls", 
+ruido <- read_excel("data/sanitarios/RuidoMolesto_Espana_2023.xls", 
     range = "A6:B24", col_names = FALSE)
 
 knitr::kable(ruido, digits = 3, col.names = c("Comunidad autónoma", "Ruido exterior molesto (% población)"), caption = "Población que considera molesto el ruido exterior (2023)")
 ```
 
 ```{r importar-trastornosMentales}
-trastornos <- read_excel("data/TrastornosMentales_Espana_2023.xls", 
+trastornos <- read_excel("data/sanitarios/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
 
 knitr::kable(trastornos, digits = 3, col.names = c("Comunidad autónoma", "Trastornos mentales (%)"), caption = "Prevalencia registrada de trastornos mentales (2023)")
@@ -285,7 +285,7 @@ knitr::kable(trastornos, digits = 3, col.names = c("Comunidad autónoma", "Trast
 
 ```{r importar-depresion}
 depresion <- read_csv2(
-  "data/CuadroDepresion_Espana_2022.csv",
+  "data/sanitarios/CuadroDepresion_Espana_2022.csv",
   locale = locale(encoding = "Windows-1252"),
   show_col_types = FALSE
 )
@@ -295,7 +295,7 @@ knitr::kable(depresion, digits = 3, caption = "Cuadro depresivo")
 
 ```{r importar-sueno}
 sueno <- read_csv2(
-  "data/Horas de sueño_Espana_2011.csv",
+  "data/sanitarios/Horas de sueño_Espana_2011.csv",
   locale = locale(encoding = "Windows-1252"),
   col_types = cols(.default = col_character()),
   show_col_types = FALSE

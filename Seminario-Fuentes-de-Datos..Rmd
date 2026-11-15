@@ -579,7 +579,8 @@ En primer lugar, queremos estudiar la relación existente entre la **cantidad de
 
 Para ello, mostramos el conjunto de datos **ordenados** de manera **decreciente por la cantidad de luz** nocturna que poseen. Sin embargo, esto no nos permite extraer conclusiones ya que no se aprecia una ordenación evidente en el resto de variables.
 
-```{r pregunta 1-ordenacionLuz}
+```{r pregunta1-ordenacionLuz}
+# Se eligen las columnas necesarias para esta pregunta y se ordenan de mayor a menor luz con desc().
 datos %>%
   select(Comunidad, Luz, Horas_sueno, Tranquilizantes) %>%
   arrange(desc(Luz))%>%
@@ -591,6 +592,9 @@ datos %>%
 Los valores relativos a la contaminación lumínica ordenados de manera decreciente pueden apreciarse en el siguiente gráfico.
 
 ```{r pregunta 1-graficosLuz}
+# Gráfico de barras: reorder(Comunidad, Luz) ordena las barras según la luz (si no, saldrían en orden alfabético).
+# geom_bar(stat = "identity") dibuja las barras con la altura del valor correspondiente.
+# coord_flip() gira el gráfico para que las barras sean horizontales y los nombres se lean bien.
 ggplot(datos, aes(x = reorder(Comunidad, Luz), y = Luz)) +
   geom_bar(stat = "identity", fill = "purple") +
   coord_flip() +
@@ -601,24 +605,27 @@ ggplot(datos, aes(x = reorder(Comunidad, Luz), y = Luz)) +
 
 A continuación, se han obtenido los **valores medios** de las tres variables relacionadas para todo el territorio español.
 
-```{r pregunta 1-valoresMedios}
+```{r pregunta1-valoresMedios}
+# summarise() resume toda la tabla en una sola fila: mean() = media y sd() = desviación típica; na.rm = TRUE ignora el dato que falta de Aragón. 
 summarise(.data = datos, Luz_media = mean(Luz, na.rm = TRUE), Luz_desviacionTipica = sd(Luz, na.rm = TRUE), sueño_media = mean(Horas_sueno, na.rm = TRUE), sueño_desviacionTipica = sd(Horas_sueno, na.rm = TRUE), tranquilizantes_media = mean(Tranquilizantes, na.rm = TRUE), tranquilizantes_desviacionTipica = sd(Tranquilizantes, na.rm = TRUE))%>%
   kable(digits = 2, col.names = c("Luz media (nW/cm²/sr)",  "Luz sd (nW/cm²/sr)", "Horas sueño media(h)", "Horas sueño sd(h)", "Consumo tranquilizantes media(%)", "Consumo tranquilizantes sd(%)"),
         caption = "Media y desviación típica de la luz, horas de sueño y consumo de tranquilizantes")
 
 ```
 
-De esta forma se obtiene que la cantidad de luz media es de **1.97 nW/cm²/sr**, el sueño de **7.81 horas** y el consumo de **tranquilizantes de 2.86 %** respecto de la población total. Y las **desviaciones típicas existentes**, son de **1.52, 0.08 y 1.06 para las variables de luz, sueño y tranquilizantes** respectivamente.
+De esta forma se obtiene que la cantidad de luz media es de **1.97 nW/cm²/sr**, el sueño de **7.82 horas** y el consumo de **tranquilizantes de 2.87 %** respecto de la población total. Y las **desviaciones típicas existentes**, son de **1.52, 0.09 y 1.07 para las variables de luz, sueño y tranquilizantes** respectivamente.
 
 *sd -standard deviation- hace referencia a la desviación típica*
 
 Finalmente, se han **agrupado las Comunidades Autónomas** en función de si presentaban parámetros de **luz nocturna inferiores o superiores a la media**. Establecidos los grupos, se calcularon las medias de las horas de sueño y del porcentaje de la población que consume relajantes, así como sus valores mínimos y máximos. Esta tabla permite extraer conclusiones respecto a la relación de las variables, apoyándose en los cálculos de media y desviación anteriores.
 
-```{r pregunta 1-resumen}
+```{r pregunta1-resumen}
+# case_when() crea una columna que indica a qué grupo pertenece cada comunidad: si su luz es mayor que la media -> "Luz superior a la media"; si no (.default) -> "inferior o igual".
+# group_by() + summarise() calculan la media, el mínimo y el máximo de cada grupo.
 datos %>%
   select(Comunidad, Luz, Horas_sueno, Tranquilizantes) %>%
   mutate(Grupo_comparacion_media_luz = case_when(Luz > mean(Luz) ~ "Luz superior a la media",
-                           .default = "Luz menor a la media")) %>%
+                           .default = "Luz inferior o igual a la media")) %>%
   group_by(Grupo_comparacion_media_luz) %>%
   summarise(Sueno_media = mean(Horas_sueno, na.rm = TRUE),
             sueno_min = min(Horas_sueno, na.rm = TRUE),
@@ -628,17 +635,20 @@ datos %>%
             tranquilizantes_max = max(Tranquilizantes, na.rm = TRUE)
             )%>%
   kable(digits = 2, col.names = c("Comparativa luz media", "Horas sueño media(h)", "Horas sueño min(h)", "Horas sueño max(h)", "Consumo tranquilizantes media(%)", "Consumo tranquilizantes min(%)", "Consumo tranquilizantes max(%)"),
-        caption = "Media de la luz, horas de seuño consumo de tranquilizantes")
+        caption = "Media de la luz, horas de sueño consumo de tranquilizantes")
 
 ```
 
 ```{r pregunta1-cajas, fig.show="hold", out.width="50%", fig.align="default"}
+# fig.show = "hold" y out.width = "50%" colocan los dos gráficos uno al lado del otro.
+# Se crea la misma columna de grupo que en la tabla anterior para poder dibujarla.
 datos_grafico <- datos %>%
   mutate(Grupo = case_when(
     Luz > mean(Luz, na.rm = TRUE) ~ "Luz superior a la media",
     .default = "Luz inferior o igual a la media"
   ))
 
+# Diagramas de cajas: la línea central es la mediana, la caja contiene el 50 % central de las comunidades y los "bigotes" llegan a los valores mínimo y máximo. 
 ggplot(datos_grafico, aes(x = Grupo, y = Horas_sueno)) +
   geom_boxplot(fill = "purple", alpha = 0.2) +
   labs(x = "Contaminación lumínica",
@@ -655,6 +665,10 @@ ggplot(datos_grafico, aes(x = Grupo, y = Tranquilizantes)) +
 Finalmente, se representan los gráficos de dispersión y se calculan las correlaciones:
 
 ```{r pregunta1-dispersion, fig.show="hold", out.width="50%", fig.align="default"}
+# Gráficos de dispersión: cada punto es una comunidad. 
+# geom_smooth(method = "lm") dibuja la línea de tendencia (solo como guía visual) para ver si se aproximan los datos.
+# geom_text(check_overlap = TRUE) escribe los nombres sin que se sobreescriban entre ellos.
+# scale_x_continuous(expand = ...) deja un 15 % de margen para que no se corten los nombres.
 ggplot(datos, aes(x = Luz, y = Horas_sueno)) +
   geom_point(colour = "purple", size = 3) +
   geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
@@ -673,6 +687,7 @@ ggplot(datos, aes(x = Luz, y = Tranquilizantes)) +
 ```
 
 ```{r pregunta1-correlacion}
+# Se calcula la correlación de cada pareja con la función propia correlacion();rbind() pone los resultados uno debajo de otro y data.frame() les añade el nombre de la relación.
 data.frame(
   Relacion = c("Contaminación lumínica - Horas de sueño",
                "Contaminación lumínica - Consumo tranquilizantes"),
@@ -683,7 +698,7 @@ data.frame(
         caption = "Correlaciones de la pregunta 1")
 ```
 
-**Respuesta a la pregunta 1.** Se aprecia que la media de las **horas de sueño** para todo el territorio español se sitúa en **7.82 horas**, pero que sin embargo, presenta una **desviación muy pequeña**, de 0.09. Esto refelja que va a existir poca variabilidad entre los distintos grupos. Por ello, cuando agrupamos las comunidades en función de si presentan una **contaminación lumínica superior o inferior** a la media, se obtienen **medias muy similares** respecto a las horas de sueño, con una diferenica de **0.02**, y no habiendo casi distinción en sus valores mínimos y máximos. Analizando los valores estadísticos obtenidos, se concluye lo siguiente. El **rho de Spearman** obtenido es de **-0.04** *(implica que de existir relación sería "a mayor contaminación, menor duración del sueño")*, y el **p-valor de 0.881**, muy **superior al 0.05** *(intervalo de confianza del 5% -alfa)* y por tanto, se concluye que **no es significativamente estadístico** el efecto de la contaminación lumínica en las horas de sueño.
+**Respuesta a la pregunta 1.** Se aprecia que la media de las **horas de sueño** para todo el territorio español se sitúa en **7.82 horas**, pero que sin embargo, presenta una **desviación muy pequeña**, de 0.09. Esto refleja que va a existir poca variabilidad entre los distintos grupos. Por ello, cuando agrupamos las comunidades en función de si presentan una **contaminación lumínica superior o inferior** a la media, se obtienen **medias muy similares** respecto a las horas de sueño, con una diferenica de **0.02**, y no habiendo casi distinción en sus valores mínimos y máximos. Analizando los valores estadísticos obtenidos, se concluye lo siguiente. El **rho de Spearman** obtenido es de **-0.04** *(implica que de existir relación sería "a mayor contaminación, menor duración del sueño")*, y el **p-valor de 0.881**, muy **superior al 0.05** *(nivel de significación α)* y por tanto, se concluye que **no es estadísticamente significativo** el efecto de la contaminación lumínica en las horas de sueño.
 
 Respecto a la implicación de esta contaminación en el consumo de tranquilizantes o fármacos derivados para conciliar el sueño se ha obtenido una **media de 2.87%** respecto a la población española que consume estos, con una **desviación de 1.07**. Al agrupar las comunidades en función de una contaminación lumínica superior o inferior respecto a la media, se aprecian diferencias en los valores medios y extremos obtenidos. La media para los **territorios con menor contaminación** es de **2.68%** mientras que para aquellos con **mayor contaminación** es del **3.11%**. Respecto a los valores extremos, si bien el valor máximo no guarda correlación con la contaminación, al ser mayor en el grupo de menor índice; sí se aprecia un **efecto directo en su valor mínimo**. En las comunidades con un **índice superior a la media**, el **valor mínimo** de consumo de estas sustancias es de **1.92%**, mientras que para aquellas de **contaminación menor** es solo de un **0.75%**. Estas diferencias se aprecian en el gráfico de distribución. Sin embargo, debido a sus valores estadísticos obtenidos, **rho de Spearman** es de **0.12** y un **p-valor** de **0.649 mayor que 0.05**, no se puede concluir que esta diferencia apreciada sea significativamente estadística.
 
@@ -698,6 +713,7 @@ Para estudiar la exposición **simultánea** se utiliza el **índice de exposici
 En primer lugar, se van a ordenar las comunidades autónomas de **mayor a menor exposición combinada**:
 
 ```{r pregunta2-ordenacionIndice}
+# Se seleccionan las columnas relativas a esta pregunta, ordenadas de mayor a menor según el índice de exposición.
 datos %>%
   select(Comunidad, Luz, Ruido, Indice_exposicion, Trastornos, Depresion_pct) %>%
   arrange(desc(Indice_exposicion)) %>%
@@ -706,6 +722,7 @@ datos %>%
 ```
 
 ```{r pregunta2-graficoIndice}
+# Gráfico de barras del índice, ordenado de menor a mayor y en horizontal. 
 ggplot(datos, aes(x = reorder(Comunidad, Indice_exposicion),
                   y = Indice_exposicion)) + geom_bar(stat = "identity", fill = "purple") + coord_flip() + labs(x = "Comunidad autónoma", y = "Índice de exposición combinada (0 = mínima, 1 = máxima)", title = "Exposición simultánea a luz nocturna y ruido")
 ```
@@ -713,6 +730,7 @@ ggplot(datos, aes(x = reorder(Comunidad, Indice_exposicion),
 A continuación, se calculan la **media** y la **desviación típica** de las variables:
 
 ```{r pregunta2-mediaDesviacion}
+# Media y desviación típica del índice y de las dos variables de salud mental.
 datos %>%
   summarise(Indice_media = mean(Indice_exposicion), Indice_sd = sd(Indice_exposicion), Trastornos_media = mean(Trastornos), Trastornos_sd = sd(Trastornos), Depresion_media = mean(Depresion_pct), Depresion_sd = sd(Depresion_pct)) %>%
   kable(digits = 2, caption = "Media y desviación típica (sd) de las variables de la pregunta 2")
@@ -721,9 +739,11 @@ datos %>%
 Tal como se ha realizado en la pregunta previa, se separan aquellas comunidades con un índice **superior** e **inferior a la media**. En el caso de la depresión se calcula también la **mediana** (el valor central), ya que la Comunidad Valenciana (18%) eleva mucho la media de su grupo.
 
 ```{r pregunta2-grupos}
+# Se crea la columna de grupo según el índice y se guarda en datos_indice para los gráficos.
 datos_indice <- datos %>%
   mutate(Grupo_indice = case_when(Indice_exposicion > mean(Indice_exposicion) ~ "Exposición superior a la media", .default = "Exposición inferior o igual a la media"))
 
+# n() cuenta cuántas comunidades hay en cada grupo; median() calcula la mediana.
 datos_indice %>%
   group_by(Grupo_indice) %>%
   summarise(N_comunidades = n(), Trastornos_media = mean(Trastornos), Depresion_media = mean(Depresion_pct), Depresion_mediana = median(Depresion_pct)) %>%
@@ -731,6 +751,7 @@ datos_indice %>%
 ```
 
 ```{r pregunta2-cajas, fig.show="hold", out.width="50%", fig.align="default"}
+# Diagramas de cajas de las dos variables de salud mental según el grupo de exposición.
 ggplot(datos_indice, aes(x = Grupo_indice, y = Trastornos)) +
   geom_boxplot(fill = "purple", alpha = 0.2) +
   labs(x = "Exposición combinada",
@@ -747,6 +768,7 @@ ggplot(datos_indice, aes(x = Grupo_indice, y = Depresion_pct)) +
 Finalmente, se representan los gráficos de dispersión y se calculan las correlaciones:
 
 ```{r pregunta2-dispersion, fig.show="hold", out.width="50%", fig.align="default"}
+# Dispersión del índice frente a cada variable de salud mental (cada punto se corresponde con una comunidad).
 ggplot(datos, aes(x = Indice_exposicion, y = Trastornos)) +
   geom_point(colour = "purple", size = 3) +
   geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
@@ -765,6 +787,7 @@ ggplot(datos, aes(x = Indice_exposicion, y = Depresion_pct)) +
 ```
 
 ```{r pregunta2-correlacion}
+# Correlaciones de Spearman del índice con cada variable de salud mental.
 data.frame(
   Relacion = c("Índice combinado - Trastornos mentales",
                "Índice combinado - Depresión"),
@@ -775,15 +798,16 @@ data.frame(
         caption = "Correlaciones de la pregunta 2")
 ```
 
-**Respuesta a la pregunta 2.** Las comunidades con mayor exposición simultánea a luz y ruido son **Madrid, Canarias y Baleares**, y las de menor exposición, **Navarra, Castilla-La Mancha y Extremadura**. Las comunidades más expuestas presentan peores valores en las dos variables de salud mental: más **trastornos mentales** *(20,7% frente a 14,3%)* y más **depresión** *(mediana del 6,4% frente al 4,8%)*. La correlación con la **depresión es fuerte y significativa** *(rho = 0,7; p = 0,002)*, mientras que con los **trastornos mentales es moderada pero no significativa** *(rho = 0,39; p = 0,117)*. Por tanto, **los datos apoyan parcialmente la hipótesis**: la exposición simultánea a luz y ruido se asocia con una mayor prevalencia de depresión, pero no de forma clara con el conjunto de trastonos mentales. Destaca la **Comunidad Valenciana**, con una depresión muy superior al resto *(18%)* a pesar de tener una exposición intermedia, lo que indica que intervienen otros factores no tenidos en cuenta.
+**Respuesta a la pregunta 2.** Las comunidades con mayor exposición simultánea a luz y ruido son **Madrid, Canarias y Baleares**, y las de menor exposición, **Navarra, Castilla-La Mancha y Extremadura**. Las comunidades más expuestas presentan peores valores en las dos variables de salud mental: más **trastornos mentales** *(20,7% frente a 14,3%)* y más **depresión** *(mediana del 6,4% frente al 4,8%)*. La correlación con la **depresión es fuerte y significativa** *(rho = 0,7; p = 0,002)*, mientras que con los **trastornos mentales es moderada pero no significativa** *(rho = 0,39; p = 0,117)*. Por tanto, **los datos apoyan parcialmente la hipótesis**: la exposición simultánea a luz y ruido se asocia con una mayor prevalencia de depresión, pero no de forma clara con el conjunto de trastornos mentales. Destaca la **Comunidad Valenciana**, con una depresión muy superior al resto *(18%)* a pesar de tener una exposición intermedia, lo que indica que intervienen otros factores no tenidos en cuenta.
 
 ### Tercera pregunta
 
 **¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
-Esta pregunta se va a abordar en dos partes. En primer lugar, se va a realizar una comprobación acerca de si la **percepción del ruido** coincide con la contaminación medida, utilizando, para ello, el **NO2** como indicador del tráfico (principal fuente de ruido urbano). A continuación, se va a estudir si precisamente ese ruido percibido se relaciona con la **depresión** o/y con el **consumo de antidepresivos**.
+Esta pregunta se va a abordar en dos partes. En primer lugar, se va a realizar una comprobación acerca de si la **percepción del ruido** coincide con la contaminación medida, utilizando, para ello, el **NO2** como indicador del tráfico (principal fuente de ruido urbano). A continuación, se va a estudiar si precisamente ese ruido percibido se relaciona con la **depresión** o/y con el **consumo de antidepresivos**.
 
 ```{r pregunta3-ordenacionRuido}
+# Las columnas se encuentran ordenadas de mayor a menor ruido molesto.
 datos %>%
   select(Comunidad, Ruido, NO2, Depresion_pct, Antidepresivos) %>%
   arrange(desc(Ruido)) %>%
@@ -791,12 +815,14 @@ datos %>%
 
 ```
 
-```{r pregunta3-graficoIndice}
+```{r pregunta3-graficoRuido}
+# Gráfico de barras del ruido molesto, ordenado y en horizontal.
 ggplot(datos, aes(x = reorder(Comunidad, Ruido),
                   y = Ruido)) + geom_bar(stat = "identity", fill = "purple") + coord_flip() + labs(x = "Comunidad autónoma", y = "Ruido molesto (%)", title = "Ruido molesto por Comunidad Autónoma")
 ```
 
 ```{r pregunta3-mediaDesviacion}
+# Media y desviación típica de las variables de la pregunta 3.
 datos %>%
   summarise(Ruido_media = mean(Ruido),
             Ruido_sd = sd(Ruido),
@@ -810,6 +836,7 @@ datos %>%
 **PARTE 1: ¿hay coincidencia entre el ruido percibido y el NO2?**
 
 ```{r pregunta3-ruidoNO2}
+# Dispersión del NO2 (tráfico) frente al ruido percibido.
 ggplot(datos, aes(x = NO2, y = Ruido)) +
   geom_point(colour = "purple", size = 3) +
   geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = "dashed") +
@@ -819,12 +846,13 @@ ggplot(datos, aes(x = NO2, y = Ruido)) +
        title = "Ruido percibido y NO2 (tráfico)")
 ```
 
-**PARTE 2: ruido percibido, depresión y antidepresivos.** Se van a separar las comunidad autónomas cuyo porcentaje de ruido molesto sea **superior** e **inferior a la media**:
+**PARTE 2: ruido percibido, depresión y antidepresivos.** Se van a separar las comunidades autónomas cuyo porcentaje de ruido molesto sea **superior** e **inferior a la media**:
 
 ```{r pregunta3-grupos}
+# Columna de grupo según el ruido molesto, guardada en datos_ruido para los gráficos.
 datos_ruido <- datos %>%
   mutate(Grupo_ruido = case_when(Ruido > mean(Ruido) ~ "Ruido superior a la media", .default = "Ruido inferior o igual a la media"))
-
+# Medias (y mediana de la depresión) de cada grupo.
 datos_ruido %>%
   group_by(Grupo_ruido) %>%
   summarise(N_comunidades = n(),
@@ -836,6 +864,7 @@ datos_ruido %>%
 ```
 
 ```{r pregunta3-cajas, fig.show="hold", out.width="50%", fig.align="default"}
+# Diagramas de cajas de la depresión y de los antidepresivos según el grupo de ruido.
 ggplot(datos_ruido, aes(x = Grupo_ruido, y = Depresion_pct)) +
   geom_boxplot(fill = "purple", alpha = 0.2) +
   labs(x = "Ruido molesto",
@@ -850,6 +879,7 @@ ggplot(datos_ruido, aes(x = Grupo_ruido, y = Antidepresivos)) +
 ```
 
 ```{r pregunta3-correlacion}
+# Correlaciones de Spearman del ruido molesto con el NO2, la depresión y los antidepresivos.
 data.frame(
   Relacion = c("Ruido molesto - NO2",
                "Ruido molesto - Depresión",
@@ -866,17 +896,32 @@ data.frame(
 
 # Conclusiones generales
 
-Tras analizar de manera individual las distintas hipótesis planteadas, se exponen las conclusiones generales del seminario. Se ha observado que los **parámetros ambientales** tienen una **implicación directa** en el estado de la **salud mental poblacional**.
+Tras analizar de manera individual las distintas hipótesis planteadas, se exponen las conclusiones generales del seminario. Se ha observado que algunos **parámetros ambientales** se **asocian** con el estado de la **salud mental poblacional**.
 
 Si bien **no se ha obtenido una evidencia estadística** en el efecto de la presencia excesiva de **luz artificial durante la noche** sobre la calidad y duración del **sueño**, ni los efectos de las contaminaciones lumínicas y acústicas en el **desarrollo de diversas patologías psicológicas**; se han obtenido resultados que apoyan la hipótesis general.
 
-Se ha demostrado una **relación directa** entre los efectos de **nieveles excesivos** de **luz octurna y cotaminación acústica** en el desarrollo de **depresión**, así como una tendencia al consumo de antidepresivos *(aunque no llega a ser estadísticamente significativa)*. Además, se ha obtenido que el desarrollo de este transtorno mental se ve **influenciado en mayor grado** por la **percepción** poblacional de **ruido molesto** más que por las variables ambientales relativas a las partículas contaminantes como tal. Además, aunque la evidencia estadística no puede confirmar el efecto real o atribuirlo únicamente a la relación expresada, hay cierta correlación entre el efecto de la presencia excesiva de **luz artificial durante la noche** sobre el **consumo de fármacos** que ayudan a conciliar el sueño.
+Se ha observado una **asociación fuerte y estadísticamente significativa** entre la exposición simultánea a **niveles elevados de luz nocturna y contaminación acústica** y la prevalencia de **depresión** *(rho = 0,70; p = 0,002)*, así como una tendencia a un mayor consumo de antidepresivos en las comunidades con más ruido molesto *(rho = 0,49; p = 0,057; aunque no llega a ser estadísticamente significativa)*. Además, se ha obtenido que este trastorno mental se asocia con la **percepción** poblacional del **ruido molesto** *(rho = 0,62)*, la cual no coincide con los niveles de **NO2** medidos desde satélite. Esto sugiere que la molestia percibida es más relevante que la contaminación por tráfico como tal. En cambio, no se ha encontrado relación entre la luz nocturna y el **consumo de fármacos** que ayudan a conciliar el sueño: aunque las comunidades más iluminadas presentan un consumo medio algo mayor *(3,11 frente a 2,68 por cada 100 habitantes)*, la diferencia no es estadísticamente significativa.
+
+
+## Limitaciones
+
+Los resultados deben interpretarse con prudencia por las siguientes limitaciones:
+
+- **Diseño ecológico:** se trabaja con medias de 17 comunidades autónomas y no con personas. Que una comunidad con más ruido presente más depresión no implica que sean las personas expuestas al ruido quienes la padecen *(falacia ecológica)*. Además, con solo 17 datos, los resultados son muy sensibles a cada comunidad.
+- **Desfase temporal:** los datos proceden de 2001, 2011, 2022 y 2023. Los datos de medicamentos (2001) y de sueño (2011) son antiguos y pueden no reflejar la situación actual.
+- **Exposición promediada por superficie:** el valor de cada comunidad incluye zonas despobladas, mientras que la mayoría de la población vive en ciudades, donde la exposición real es mayor.
+- **Indicadores indirectos:** el ruido se mide como percepción *(encuesta)* y no en decibelios, y el NO2 es solo un indicador aproximado del tráfico. El ozono medido por satélite corresponde a toda la columna atmosférica y no al ozono a nivel del suelo.
+- **Diferencias en el registro sanitario:** la prevalencia registrada depende de cómo diagnostica y registra cada servicio de salud, lo que podría explicar casos llamativos como el de la Comunidad Valenciana.
+- **Factores de confusión:** variables como la renta, la edad de la población, el desempleo o el turismo pueden influir a la vez en la contaminación y en la salud mental, y no se han tenido en cuenta.
+
+## Reflexión final
 
 Por todo ello, se confirma la **existencia de relación entre el desarrollo urbano con un deterioro de la salud mental poblacional**, y se concluye que el progreso de nuestras ciudadades debería tener en cuenta los efectos ambientales en el estado de la salud mental y no solo las implicaciones directas en el estado de la salud física. **La salud mental también es salud, y por ello, debería ser tenida en cuenta.** La calidad de vida no es solo unas carreteras bien asfaltadas, parques con bancos y fuentes y edificios de colores sofisticados, la calidad de vida es nuestra salud.
 
 Y tú, **¿dónde elegirías vivir?**
 
-# Declaración del uso de Inteligencia Artifical
+
+# Declaración del uso de Inteligencia Artificial
 
 En la realización de este seminario se ha realizado un **uso legítimo** de las diferentes herramientas de **IA disponibles**. En concreto, la imagen del fondo de la página HTML ha sido generada haciendo uso de la herramienta de [Microsoft Copilot](https://copilot.cloud.microsoft/chat?fromcode=cmmu8qodiz1&lhredirected=1&es=AutoSignIn) aunque el prompt introducido es de creación propia.
 

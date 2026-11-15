@@ -6,7 +6,7 @@ author:
   - "Claudia Fernández Ruiz"
   - "Nieves García Morquillas"
   
-date: "12 de octubre de 2026"
+date: "12 de octubre de 2026 - Curso 2026-2027"
 
 lang: es
 
@@ -15,72 +15,112 @@ output:
     toc: true
     number_sections: true
     theme: flatly
-    css: estilos.css
+    css: estilos/estilos.css
     
-bibliography: referencias.bib
-csl: apa.csl
+bibliography: bibliografia/referencias.bib
+csl: bibliografia/apa.csl
 link-citations: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-library(sf)
-library(dplyr)
-library(readr)
-library(readxl)
-library(knitr)
-library(leaflet)
-library(ggplot2)
-library(wordcloud2)
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = "center") # Centrado de gráficos.
+# Opciones generales para todos los bloques de código:
+# echo = TRUE -> Para que el código se muestre en el HTML.
+# message/warning = FALSE -> Así, se ocultan los mensajes y avisos de R para que el HTML quede limpio.
+# fig.align = "center" -> Para que todos los gráficos queden centrados.
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = "center")
+
+# PAQUETES EMPLEADOS EN EL SEMINARIO
+library(sf) # Lectura y manejo de datos geográficos (GeoJSON)
+library(dplyr) # Manipulación de tablas: select(), mutate(), left_join(), entre otros.
+library(readr) # Lectura de ficheros CSV.
+library(readxl) # Lectura de ficheros Excel.
+library(knitr) # Tablas en el HTML con kable().
+library(leaflet) # Mapas interactivos.
+library(ggplot2) # Gráficos.
+library(wordcloud2) # Nube de palabras.
 ```
 
 # Introducción
+
 El **progreso urbano**, definido como el proceso de **evolución, crecimiento y mejora integral** en el que las ciudades mejoran la calidad de vida de sus habitantes, tiene una gran influencia en los marcadores sanitarios de un territorio. Es por ello, que este concepto va más allá de una expansión en materia de asfalto, carreteras, edificios y comunicaciones; sino que implica un desarrollo equilibrado a nivel **social, económico, tecnológico y ambiental**, que garantice unas condiciones habitables, dignas y no perjudiciales. [@tonne_defining_2021]
 
-El **entorno ambiental** constituye uno de los principales **determinantes en la salud humana**. Sabemos que altos nivel de PM2.5 y PM10 se vinculan en una mayor tasa de desarrollo de cáncer de pulmón o de enfermedades cardiovasculares en la población [@karimi_long-term_2024], o que la calidad del agua se vincula con la propagación de enfermedades transmisibles [@lee_burden_2023]. Es por ello, que los indicadores de salud física y los parámetros que afectan a la misma *(potabilización del agua, contaminación del aire, radiación, etc)* son tenidos en cuenta en el diseño urbano. Pero, **¿estamos cubriendo todos los aspectos relativos a la salud humana?** 
+El **entorno ambiental** constituye uno de los principales **determinantes en la salud humana**. Sabemos que altos niveles de PM2.5 y PM10 se vinculan con una mayor tasa de desarrollo de cáncer de pulmón o de enfermedades cardiovasculares en la población [@karimi_long-term_2024], o que la calidad del agua se vincula con la propagación de enfermedades transmisibles [@lee_burden_2023]. Es por ello, que los indicadores de salud física y los parámetros que afectan a la misma *(potabilización del agua, contaminación del aire, radiación, etc)* son tenidos en cuenta en el diseño urbano. Pero, **¿estamos cubriendo todos los aspectos relativos a la salud humana?**
 
-Según la definición de la **OMS**, *“la salud es un estado de completo bienestar físico, mental y social, y no solamente la ausencia de afecciones o enfermedades”* [@oms1948]. Por ello, podríamos afirmar con certeza que las ciudades se desarrollan garantizando una salud física y social de sus ciudadanos, pero, ¿y qué hay de su **salud mental**? **¿Pueden las condiciones ambientales vinculadas a la contaminación afectar a la salud humana?**
+Según la definición de la **OMS**, *“la salud es un estado de completo bienestar físico, mental y social, y no solamente la ausencia de afecciones o enfermedades”* [@oms1948]. Por ello, podríamos afirmar con certeza que las ciudades se desarrollan garantizando una salud física y social de sus ciudadanos, pero, ¿y qué hay de su **salud mental**? **¿Pueden las condiciones ambientales vinculadas a la contaminación afectar a la salud mental?**
 
-En este seminario, que lleva por título *“El lado invisible del progreso urbano”*, se busca demostrar cómo el diseño y avance de las ciudades no están teniendo en cuenta su impacto en la salud mental de las personas, y en consecuencia, están siendo el causante de un claro **deterioro** de esta a nivel poblacional. Para su desarrollo, se emplearán datos de fuentes oficiales relativas a datos ambientales e informes del gobierno relativos a la estadística sanitaria, y se estudiará la relación existente entre los niveles de **contaminación ambiental, contaminación acústica y lumínica**, en el estado general de **salud mental** poblacional, el desarrollo de **trastornos mentales** y el consumo derivado de **fármacos**.
+En este seminario, que lleva por título *“El lado invisible del progreso urbano”*, se busca demostrar si el diseño y avance de las ciudades, que no suelen tener en cuenta su impacto en la salud mental de las personas,podrían estar asociados a un **deterioro** de esta a nivel poblacional. Para su desarrollo, se emplearán datos de fuentes oficiales relativas a datos ambientales e informes del gobierno relativos a la estadística sanitaria, y se estudiará la relación existente entre los niveles de **contaminación ambiental, contaminación acústica y lumínica**, en el estado general de **salud mental** poblacional, el desarrollo de **trastornos mentales** y el consumo derivado de **fármacos**.
 
+## El seminario en una imagen
+
+La siguiente **nube de palabras** resume los **conceptos clave** del seminario. El **tamaño** de cada palabra indica su peso en el trabajo *(de las variables principales a los conceptos de apoyo)* y el **color**, el tipo de concepto: [**morado oscuro**]{style="color:#512A75"} para la salud mental, [**rosa**]{style="color:#B5418A"} para la contaminación, [**lila**]{style="color:#9475B5"} para el entorno urbano y [**morado medio**]{style="color:#76509A"} para la metodología.
+
+```{r nube-palabras}
+# 1. Tabla con los conceptos clave del seminario:
+#    - palabra: texto que aparece en la nube
+#    - peso:    tamaño de la palabra (10 = concepto central, 3 = concepto de apoyo)
+#    - tipo:    grupo al que pertenece el concepto (sirve para darle color)
+conceptos <- data.frame(
+  palabra = c("Salud mental", "Depresión", "Trastornos mentales", "Sueño", "Antidepresivos",
+              "Ritmo circadiano", "Tranquilizantes", "Melatonina", "Bienestar", "Psicofármacos",
+              "Luz nocturna", "Ruido", "Contaminación lumínica", "Contaminación acústica", "NO2",
+              "Ozono", "Tráfico", "Contaminación atmosférica", "PM2.5",
+              "Progreso urbano", "Ciudades", "España", "Comunidades autónomas",
+              "Crecimiento urbano", "Calidad de vida",
+              "Correlación", "Spearman", "Normalización", "Satélite", "INE", "Google Earth Engine"),
+  peso    = c(10, 9, 7, 7, 6, 5, 5, 4, 4, 3,
+              9, 9, 6, 6, 6, 5, 5, 5, 3,
+              8, 6, 6, 5, 4, 4,
+              5, 4, 4, 4, 3, 3),
+  tipo    = c(rep("salud", 10), rep("contaminacion", 9), rep("urbano", 6), rep("metodo", 6))
+)
+
+# 2. Asignamos a cada tipo de concepto un color de la paleta morada del seminario (estilos.css)
+conceptos <- conceptos %>%
+  mutate(color = case_when(tipo == "salud"         ~ "#512A75",   # morado oscuro
+                           tipo == "contaminacion" ~ "#B5418A",   # rosa
+                           tipo == "urbano"        ~ "#9475B5",   # lila
+                           tipo == "metodo"        ~ "#76509A"))  # morado medio
+
+# 3. Dibujamos la nube
+# wordcloud2 necesita una tabla con la palabra en la 1.ª columna y su tamaño en la 2.ª
+wordcloud2(select(conceptos, palabra, peso),
+           color = conceptos$color,            # color de cada palabra
+           fontFamily = "Lato",                # misma tipografía que el resto del documento
+           fontWeight = "bold",                # letra en negrita
+           size = 0.32,                        # tamaño general 
+           gridSize = 6,                       # separación entre palabras
+           rotateRatio = 0,                    # todas las palabras en horizontal 
+           backgroundColor = "transparent",    # sin fondo propio
+           shape = "circle")                   # forma de la nube
+```
 
 ## Fuentes de obtención de datos
-Para garantizar la fiabilidad de las conclusiones obtenidas, todos los datos han sido obtenidos de **páginas oficiales**. 
 
-Cabe aclararse que, la fecha y, por ello, actualidad de los datos no guarda una exacta vinculación entre los datos ambientales y los relativos a la salud. Esto se debe a que los **datos sensibles no son tan accesibles**, y además, tardan más tiempo en ser publicados, por tanto, se han tomado los ficheros más recientes que se encontraban disponibles *(actúan como una buena aproximación de los datos sanitarios actuales)*.
+Para garantizar la fiabilidad de las conclusiones obtenidas, todos los datos han sido obtenidos de **páginas oficiales**.
+
+Cabe aclarar que, la fecha y, por ello, actualidad de los datos no guarda una exacta vinculación entre los datos ambientales y los relativos a la salud. Esto se debe a que los **datos sensibles no son tan accesibles**, y además, tardan más tiempo en ser publicados, por tanto, se han tomado los ficheros más recientes que se encontraban disponibles *(actúan como una buena aproximación de los datos sanitarios actuales)*.
 
 Las fuentes empleadas han sido las siguientes:
 
-
-- [Google Eart engine](https://earthengine.google.com/)
-
-
+- [Google Eart Engine](https://earthengine.google.com/)
 - [Instituto Nacional de Estadística](https://www.ine.es/)
-
-
 - [Ministerio de Sanidad](https://www.sanidad.gob.es/estadEstudios/sanidadDatos/home.htm)
-
-
 - [Indicadores clave - Sistema Nacional de Salud, Gobierno de España](https://inclasns.sanidad.gob.es/main.html)
-
-
 
 La siguiente tabla resume qué fichero aporta cada variable, su año y su unidad:
 
-| Variable | Fichero (carpeta `data/`) | Año | Unidad original | Fuente |
+| Variable | Fichero | Año | Unidad original | Fuente |
 |:--|:--|:--:|:--|:--|
-| Luz nocturna | `Luz_Nocturna_Espana_2023.geojson` | 2023 | Radiancia (nW/cm²/sr) | Google Earth Engine |
-| Dióxido de nitrógeno (NO2) | `NO2_Espana_2023.geojson` | 2023 | mol/m² | Google Earth Engine (Sentinel-5P) |
-| Ozono (O3) | `O3_Espana_2023.geojson` | 2023 | mol/m² | Google Earth Engine (Sentinel-5P) |
-| Ruido exterior molesto | `RuidoMolesto_Espana_2023.xls` | 2023 | % de población | INCLASNS (Ministerio de Sanidad) |
-| Trastornos mentales | `TrastornosMentales_Espana_2023.xls` | 2023 | Prevalencia registrada (%) | INCLASNS (BDCAP) |
-| Cuadro depresivo mayor | `CuadroDepresion_Espana_2022.csv` | 2022 | Miles de personas | INE |
-| Horas de sueño | `Horas_Sueno_Espana_2011.csv` | 2011 | Horas (media) | INE |
-| Tranquilizantes y antidepresivos | `ConsumoMedicamentosSaludMental_Espana_2001.xls` | 2001 | Tasa por 100 habitantes ≥ 16 años | Ministerio de Sanidad (ENS 2001) |
-| Población | `Poblacion_CCAA_2022.csv` | 2022 | Habitantes | INE (Padrón a 1 de enero de 2022) |
-
-
+| Luz nocturna | `data/ambientales/Luz_Nocturna_Espana_2023.geojson` | 2023 | Radiancia (nW/cm²/sr) | Google Earth Engine |
+| Dióxido de nitrógeno (NO2) | `data/ambientales/NO2_Espana_2023.geojson` | 2023 | mol/m² | Google Earth Engine (Sentinel-5P) |
+| Ozono (O3) | `data/ambientales/O3_Espana_2023.geojson` | 2023 | mol/m² | Google Earth Engine (Sentinel-5P) |
+| Ruido exterior molesto | `data/sanitarios/RuidoMolesto_Espana_2023.xls` | 2023 | % de población | INCLASNS (Ministerio de Sanidad) |
+| Trastornos mentales | `data/sanitarios/TrastornosMentales_Espana_2023.xls` | 2023 | Prevalencia registrada (%) | INCLASNS (BDCAP) |
+| Cuadro depresivo mayor | `data/sanitarios/CuadroDepresion_Espana_2022.csv` | 2022 | Miles de personas | INE |
+| Horas de sueño | `data/sanitarios/Horas_Sueno_Espana_2011.csv` | 2011 | Horas (media) | INE |
+| Tranquilizantes y antidepresivos | `data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls` | 2001 | Tasa por 100 habitantes ≥ 16 años | Ministerio de Sanidad (ENS 2001) |
+| Población | Introducida en el código (bloque `importar-poblacion`) | 2022 | Habitantes | INE (Padrón a 1 de enero de 2022) |
 
 ## Antecedentes
 
@@ -90,63 +130,53 @@ En las últimas décadas, el **crecimiento urbano**, el aumento del **tráfico**
 
 Primero de todo es conveniente aclarar algunos conceptos. Nos referimos a **contaminación acústica o sonora** a la presencia excesiva de **ruidos o vibraciones** que resultan molestos y perjudiciales para la salud de los seres vivos o para el estado del ecosistema. [@leyruido2003] Por su parte, nos referimos a la **contaminación lumínica** como la **alteración** del estado natural de **oscuridad nocturna** causada por un uso innecesario o excesivo de luz artificial, causando su dispersión al cielo y la invasión de espacios ajenos. [@leyluminica2001]
 
-Definidos estos conceptos, resulta relevante conocer los **antecedentes científicos** vinculados a esta temática. Cuando efectuamos una búsqueda de los efectos de la contaminación sobre la salud humana, la inmensa mayoría de los resulados nos hablan de su **vinculación al cáncer, salud cardiovascular y propagación vírica**. Ahora bien, si forzamos la búsqueda al ámbito de la salud mental *(incluyendo el término "AND mental health" en el constructo de la búsqueda booleana)*, se aprecian estudios de gran relevancia:
+Definidos estos conceptos, resulta relevante conocer los **antecedentes científicos** vinculados a esta temática. Cuando efectuamos una búsqueda de los efectos de la contaminación sobre la salud humana, la inmensa mayoría de los resultados nos hablan de su **vinculación al cáncer, salud cardiovascular y propagación vírica**. Ahora bien, si forzamos la búsqueda al ámbito de la salud mental *(incluyendo el término "AND mental health" en el constructo de la búsqueda booleana)*, se aprecian estudios de gran relevancia:
 
 - **Contaminación atmosférica y depresión.** En una revisión sistemática y metaanálisis de 39 estudios, *Borroni et al. (2022)* observaron que la exposición a **material particulado** y a **NO2**, tanto a corto como a largo plazo, se asociaba con un mayor **riesgo de depresión**, siendo la asociación con las PM2.5 la más robusta; para el ozono, en cambio, la asociación no fue estadísticamente significativa. [@borroni_air_2022]
 
-
 - **Luz nocturna y depresión.** *Chen et al. (2024)* reunieron 7 estudios con más de **560.000 participantes** y concluyeron que tanto la luz artificial nocturna exterior como la interior se asocian con un mayor riesgo de depresión: cada aumento de **1 nW/cm²/sr** de luz exterior *(la misma unidad que usamos en el seminario presente)* se relacionó con un aumento del **0,43% del riesgo**. Por su parte, *Deprato et al. (2025)* revisan la asociación entre la luz nocturna y distintos desenlaces de salud mental. [@chen_artificial_2024] [@deprato_associations_2025]
 
-
-- **Contaminación y sueño.** *Wang et al. (2025)* revisan la relación entre la contaminación atmosférica y la salud del sueño en adultos de mediana y avanzada edad, y *Zhang et al. (2023)* estudian el impacto del **ozono** a nivel del sueño sobre la **calidad** y los **patrones del electroencefalograma**. [@wang_air_2025] [@zhang_impact_2023]
+- **Contaminación y sueño.** *Wang et al. (2025)* revisan la relación entre la contaminación atmosférica y la salud del sueño en adultos de mediana y avanzada edad, y *Zhang et al. (2023)* estudian el impacto del **ozono** a nivel del suelo sobre la **calidad** y los **patrones del electroencefalograma**. [@wang_air_2025] [@zhang_impact_2023]
 
 No obstante, cabe recalcar que son escasos los trabajos que combinan, en un mismo análisis y a escala territorial en España, la **luz nocturna medida por satélite**, la **contaminación atmosférica**, la **percepción del ruido** y varios **indicadores de salud mental** procedentes de fuentes oficiales. Este seminario pretende abordar justamente esa laguna.
-
 
 # Objetivos
 
 ## Objetivo general
 
-**Analizar, a escala de Comunidad Autónoma, si la exposición a contaminación lumínima *(luz nocturna)*, acústica *(ruido percibido)* y atmosférica *(NO2 y O3)* se relaciona con peores indicadores de salud mental *(trastornos mentales, depresión, horas de sueño y consumo de psicofármacos)* en España. **
+**Analizar, a escala de Comunidad Autónoma, si la exposición a contaminación lumínica *(luz nocturna)*, acústica *(ruido percibido)* y atmosférica *(NO2 y O3)* se relaciona con peores indicadores de salud mental *(trastornos mentales, depresión, horas de sueño y consumo de psicofármacos)* en España.**
 
-
-El objetivo principal de este seminario es reflejar mediante el apoyo en **datos reales** el impacto que tienen los diversos **parámetros de contaminación** en la **salud mental poblacional**. Se busca analizar la contaminación desde una perspectiva diferente. Si bien a menudo nos referimos a esta como las partículas de **CO2 presentes**, expresado en **ppm** *(partes por millón)*; el término contaminación engloba muchos más aspectos. En concreto, este seminario se focaliza en la **contaminación acústica** y la **contaminación lumínica**. Se va a buscar relación entre estas variables, expresadas como parámetros de **luz nocturna**, **ruido molesto**,  **NO2** y **O3** con el desarrollo de diversos **trastornos mentales**, destacando el cuadro depresivo; la **interrupción del ciclo circadiano**, expresado como un déficit en las horas de sueño; y en el **consumo de fármacos** vinculados a la salud mental, representando el consumo de relajantes, tranquilizantes y fármacos para dormir, así como elde antidepresivos.
-
+El objetivo principal de este seminario es reflejar mediante el apoyo en **datos reales** el impacto que tienen los diversos **parámetros de contaminación** en la **salud mental poblacional**. Se busca analizar la contaminación desde una perspectiva diferente. Si bien a menudo nos referimos a esta como la **concentración de CO2**, expresada en **ppm** *(partes por millón)*; el término contaminación engloba muchos más aspectos. En concreto, este seminario se focaliza en la **contaminación acústica** y la **contaminación lumínica**. Se va a buscar relación entre estas variables, expresadas como parámetros de **luz nocturna**, **ruido molesto**, **NO2** y **O3** con el desarrollo de diversos **trastornos mentales**, destacando el cuadro depresivo; la **interrupción del ciclo circadiano**, expresado como un déficit en las horas de sueño; y en el **consumo de fármacos** vinculados a la salud mental, representando el consumo de relajantes, tranquilizantes y fármacos para dormir, así como el de antidepresivos.
 
 ## Objetivos específicos
 
 Vinculado al desarrollo del objetivo principal, se han generado **3 objetivos específicos** que permiten realizar un análisis más fragmentado del problema y por ello, facilitan la obtención de conclusiones. Los 3 objetivos se han formulado en forma de pregunta y se detallan a continuación.
 
-
 **PREGUNTA 1: ¿Una mayor tasa de contaminación lumínica está directamente vinculada a una interrupción del ciclo circadiano que deriva en el consumo de medicamentos y derivados para conciliar el sueño?**
 
-Esta primera pregunta tiene como objetivo estudiar el impacto que tiene la presencia de **luz artificial durante la noche** sobre nuestro **ritmo circadiano**. El cuerpo humano, al igual que muchos otros seres vivos, cuenta con un ciclo circadiano interno *(un reloj natural)* que se relaciona con la secreción de la hormona melatonina. Este ciclo es el encargado de regular el estado **sueño-vigilia**, manteniéndonos despiertos durante el día e induciendo la somnolencia a la noche. Ahora bien, este ciclo funciona mediante **fotorreceptores** y la información vinculada a la cantidad de luz que estos captan. En ausencia de estímulosos luminosos, propios de la noche, se secreta esta hormona. [@prayag_light_2019] Se busca ver el impacto que tiene la **no presencia de oscuridad** en las horas nocturnas y el impacto en la **conciliación del sueño**.
-
+Esta primera pregunta tiene como objetivo estudiar el impacto que tiene la presencia de **luz artificial durante la noche** sobre nuestro **ritmo circadiano**. El cuerpo humano, al igual que muchos otros seres vivos, cuenta con un ciclo circadiano interno *(un reloj natural)* que se relaciona con la secreción de la hormona melatonina. Este ciclo es el encargado de regular el estado **sueño-vigilia**, manteniéndonos despiertos durante el día e induciendo la somnolencia a la noche. Ahora bien, este ciclo funciona mediante **fotorreceptores** y la información vinculada a la cantidad de luz que estos captan. En ausencia de estímulos luminosos, propios de la noche, se secreta esta hormona. [@prayag_light_2019] Se busca ver el impacto que tiene la **no presencia de oscuridad** en las horas nocturnas y el impacto en la **conciliación del sueño**.
 
 **PREGUNTA 2: ¿La exposición simultánea a altos niveles de contaminación acústica y lumínica se correlacionan con una peor salud mental?**
 
-Esta segunda pregunta quiere vincular los fatores contaminantes con el deterioro del estado de salud mental. El cuerpo humano está formado por **múltiples receptores**, vinculados a los **5 sentidos**, que captan información de manera constante del exterior y permiten actuar acorde a la misma. Sin embargo, el desarrollo urbano actual ha derivado en una **sobre-estimulación de estos receptores**. El **ruido** y la **luz** son factores ambientales que permanecen **presentes todo el día** *(incluso por la noche)*, llegando a sobrecargar a nuestros receptores *(aunque en la mayoría de las ocasiones no seamos realmente consciente de ello)*. Esta sobrecarga afecta directamente a **nivel neurológico**, ya que todo esta información debe ser procesada de alguna forma por el cerebro. Por ello, se quiere observar el efecto de estos contaminantes en la **prevalencia del deterioro del estado de la salud mental** y, en consecuencia con el desarrollo de **trastornos mentales**.
-
+Esta segunda pregunta quiere vincular los factores contaminantes con el deterioro del estado de salud mental. El cuerpo humano está formado por **múltiples receptores**, vinculados a los **5 sentidos**, que captan información de manera constante del exterior y permiten actuar acorde a la misma. Sin embargo, el desarrollo urbano actual ha derivado en una **sobre-estimulación de estos receptores**. El **ruido** y la **luz** son factores ambientales que permanecen **presentes todo el día** *(incluso por la noche)*, llegando a sobrecargar a nuestros receptores *(aunque en la mayoría de las ocasiones no seamos realmente conscientes de ello)*. Esta sobrecarga afecta directamente a **nivel neurológico**, ya que toda esta información debe ser procesada de alguna forma por el cerebro. Por ello, se quiere observar el efecto de estos contaminantes en la **prevalencia del deterioro del estado de la salud mental** y, en consecuencia con el desarrollo de **trastornos mentales**.
 
 **PREGUNTA 3: ¿Las áreas en las que los ciudadanos consideran una mayor molestia ocasionada por los ruidos exteriores se vinculan con una mayor contaminación acústica y tendencia al desarrollo de cuadros depresivos de mayor impacto, ligados al consumo de antidepresivos?**
 
 Esta última pregunta se centra en el desarrollo de un trastorno mental concreto, la **depresión**. Además de los medidores objetivos de las variables físicas vinculadas a la **contaminación acústica**, resulta de gran relevancia conocer la **percepción poblacional** de la misma. No es lo mismo decir que en una ciudad hay ruido, a que los habitantes de la misma **consideren molesto** este en el **interior de sus hogares**. Es decir, se van a emplear datos que reflejan el **porcentaje** de cada Comunidad Autónoma que declara que el **ruido** procedente del **exterior de su vivienda** es **molesto en la misma**. Se busca comprobar la concordancia de la **percepción pública** con los datos reales de la contaminación acústica. Una vez se establece la **correspondencia**, se quiere comprobar si el ruido es un **factor influyente** en el desarrollo de cuadros depresivos y por tanto, una ciudad con peor índice de esta contaminación se ve condicionada a un mayor consumo de **fármacos antidepresivos** en su población.
 
-
-
 # Metodología y Resultados
 
-La metodología se divide en tres fases: **(1)** **importación** de los datos, **(2)** **normalización** para que todas las fuentes sean comparables y **(3)** **análisis** de cada pregunta mediante mapas, gráficos de dispersión y correlaciones. 
+La metodología se divide en tres fases: **(1)** **importación** de los datos, **(2)** **normalización** para que todas las fuentes sean comparables y **(3)** **análisis** de cada pregunta mediante mapas, gráficos de dispersión y correlaciones.
 
 ## Importación de los datos
 
 ### Datos ambientales
 
-Todos los ficheros se guardan en la carpeta `data/` del repositorio. Cada fuente tiene un formato distinto, por lo que se usa la función adecuada para cada uno: `st_read()` para los GeoJSON, `read_excel()` para los Excel y `read_csv2()` para los CSV.
-
+Todos los ficheros se guardan en la carpeta `data/` del repositorio, separados en `data/ambientales/` y `data/sanitarios/`. Cada fuente tiene un formato distinto, por lo que se usa la función adecuada para cada uno: `st_read()` para los GeoJSON, `read_excel()` para los Excel y `read_csv2()` para los CSV.
 
 ```{r importar-geojson}
-# Los GeoJSON contienen la forma de cada comunidad autónoma y el valor medio de la variable en 2023 (calculado en Google Earth Engine).
+# Los GeoJSON contienen la forma de cada comunidad autónoma y el valor medio de la variable en 2023 (calculado previamente en Google Earth Engine).
+# quiet = TRUE evita que st_read() imprima información del fichero.
 
 luz <- st_read("data/ambientales/Luz_Nocturna_Espana_2023.geojson", quiet = TRUE)
 no2 <- st_read("data/ambientales/NO2_Espana_2023.geojson", quiet = TRUE)
@@ -154,6 +184,8 @@ o3 <- st_read("data/ambientales/O3_Espana_2023.geojson", quiet = TRUE)
 ```
 
 ```{r tabla-contaminantes}
+# st_drop_geometry() quita la forma y deja solo la tabla de los datos.
+# select() permite seleccionar la columna con el nombre de la Comunidad (ADM1_NAME) y el valor medio (mean), al mismo tiempo, que les cambia el nombre.
 tabla_luz <- st_drop_geometry(luz) %>%
   select(Comunidad = ADM1_NAME, Luz_nocturna = mean)
 
@@ -163,12 +195,16 @@ tabla_no2 <- st_drop_geometry(no2) %>%
 tabla_o3 <- st_drop_geometry(o3) %>%
   select(Comunidad = ADM1_NAME, O3 = mean)
 
+# Se unen las tres tablas por el nombre de la comunidad con un left_join().
+# Se pasa el NO2 a µmol/m² (multiplicando por un millón) y se ordena alfabéticamente.
 tabla_ccaa_contaminantes <- tabla_luz %>%
   left_join(tabla_no2, by = "Comunidad") %>%
   left_join(tabla_o3, by = "Comunidad") %>%
   mutate(NO2 = NO2 * 1e6) %>%
   arrange(Comunidad)
 
+# kable() permite mostrar la tabla en el HTML.
+# col.names permite poner títulos legibles a las columnas.
 knitr::kable(tabla_ccaa_contaminantes, digits = 3,
              col.names = c("Comunidad autónoma", "Luz nocturna",
                            "NO2 (µmol/m²)", "O3 (mol/m²)"),
@@ -205,7 +241,6 @@ leaflet(luz) %>%
   )
 ```
 
-
 ```{r graficar-No2, fig.align='center'}
 # Se pasa el NO2 de mol/m² a µmol/m².
 no2 <- no2 %>%
@@ -229,7 +264,6 @@ leaflet(no2) %>%
   )
 ```
 
-
 ```{r graficar-O3, fig.align='center'}
 pal <- colorNumeric("magma", domain = o3$mean)
 
@@ -249,10 +283,9 @@ leaflet(o3) %>%
   )
 ```
 
-
 ### Datos sanitarios
 
-``` {r importar-saludMental}
+```{r importar-saludMental}
 antidepresivos <- read_excel("data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
     col_names = FALSE, col_types = c("text", "skip", "numeric"))
@@ -321,13 +354,12 @@ poblacion <- data.frame(
 knitr::kable(poblacion, digits = 3, caption = "Poblacion por Comunidades")
 ```
 
-
 ## Normalización de los datos
 
 Cada fuente *"habla un idioma distinto"*, así que antes de poder comparar las variables hay que **normalizarlas**. Se han detectado los siguientes problemas:
 
-|Problema |  Solución |
-|:--|:--|
+| Problema | Solución |
+|:-----------------------------------|:-----------------------------------|
 | Los nombres de las comunidades autónomas no coinciden. | Función `normalizar_ccaa()` |
 | Unidades poco legibles. | Cambio de unidades. |
 | Datos absolutos en lugar de relativos. | Dividir entre la población. |
@@ -335,6 +367,7 @@ Cada fuente *"habla un idioma distinto"*, así que antes de poder comparar las v
 | Cobertura territorial distinta. | Análisis con las 17 CCAA. |
 
 ### Unificación de nombres
+
 En primer lugar, se va a llevar a cabo la unificación de los nombres de las Comunidades Autónomas.
 
 ```{r funcion-nombres}
@@ -366,6 +399,7 @@ normalizar_ccaa <- function(nombre) {
 ```
 
 ### Modificación tipos de datos importados
+
 La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una **incorrección en el tipo de dato** relativo a las **horas de sueño** totales. Este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
 
 ```{r sueno-formatoNumerico}
@@ -375,6 +409,7 @@ sueno_numerico <- sueno %>%
 ```
 
 ### Unificación de la estructura
+
 A continuación, se va a proceder a dejar todas las tablas con la misma estructura.
 
 Cada tabla se reduce a dos columnas: `Comunidad` y el valor de la variable. Con `select()` se lleva a cabo la elección y el renombrado de las columnas y con `mutate()` se aplica la función anterior a los nombres.
@@ -418,15 +453,15 @@ tabla_poblacion <- poblacion %>%
 
 ```
 
-
 ### Conversión de las unidades
+
 Posteriormente, se van a convertir las unidades, siguiendo los siguientes parámetros:
 
 - **NO2:** el valor original en mol/m² tiene muchos ceros. Se va a multiplicar por 1.000.000, quedando expresado en **µmol/m²**, más fácil de leer.
 
 - **O3:** se convierte de mol/m² a **Unidades Dobson (DU)**, la unidad habitual para el ozono *(1 DU = 4,4615 x 10⁻⁴ mol/m²)*.
 
-- **Depresión:** el INE da el número de personas en miles. Una comunidad grande siempre tendrá más casos que una pequeña, por lo que se va a dividir entre la población para obtener el **porcentaje de población** con un cuadro depresivo mayor. 
+- **Depresión:** el INE da el número de personas en miles. Una comunidad grande siempre tendrá más casos que una pequeña, por lo que se va a dividir entre la población para obtener el **porcentaje de población** con un cuadro depresivo mayor.
 
 ```{r unidades}
 # Se van a unir las tres variables ambientales por el nombre (en los tres GeoJSON es igual), y después, se normalizan los nombres y unidades correspondientes.
@@ -475,8 +510,7 @@ kable(datos, digits = 2,
 
 La luz y el ruido se miden en unidades distintas, así que no se pueden sumar directamente. Ante esto, la **normalización mín-máx** permite transformar cualquier variable a una escala de 0 a 1: el valor más bajo pasa a ser 0 y el más alto, 1.
 
-$$x_{normalizado} = \frac{x - x_{min}}{x_{max} - x_{min}}$$
-Con ambas variables en la misma escala, se construye un **índice de exposición combinada** (resultante de la media de las dos).
+$$x_{normalizado} = \frac{x - x_{min}}{x_{max} - x_{min}}$$ Con ambas variables en la misma escala, se construye un **índice de exposición combinada** (resultante de la media de las dos).
 
 ```{r normalizacion-0-1}
 normalizar_0_1 <- function(x) {
@@ -493,9 +527,9 @@ datos %>%
   kable(digits = 2, caption = "Ejemplo: las 5 comunidades con mayor exposición combinada")
 ```
 
-## Procesamiento de datos 
+## Procesamiento de datos
 
-A continuación, se encuentra una función que permite calcular la **correlación de Spearman** entre dos variables y retorna el **rho** y el **p-valor** redondeados. Dicha función se utilizará para responder las preguntas correspondientes. 
+A continuación, se encuentra una función que permite calcular la **correlación de Spearman** entre dos variables y retorna el **rho** y el **p-valor** redondeados. Dicha función se utilizará para responder las preguntas correspondientes.
 
 ```{r funcion-correlacion}
 correlacion <- function(x,y) {
@@ -504,7 +538,6 @@ correlacion <- function(x,y) {
     p_valor = round(prueba$p.value, 3))
 }
 ```
-
 
 ### Primera pregunta
 
@@ -547,7 +580,6 @@ De esta forma se obtiene que la cantidad de luz media es de **1.97 nW/cm²/sr**,
 
 *sd -standard deviation- hace referencia a la desviación típica*
 
-
 Finalmente, se han **agrupado las Comunidades Autónomas** en función de si presentaban parámetros de **luz nocturna inferiores o superiores a la media**. Establecidos los grupos, se calcularon las medias de las horas de sueño y del porcentaje de la población que consume relajantes, así como sus valores mínimos y máximos. Esta tabla permite extraer conclusiones respecto a la relación de las variables, apoyándose en los cálculos de media y desviación anteriores.
 
 ```{r pregunta 1-resumen}
@@ -567,7 +599,6 @@ datos %>%
         caption = "Media de la luz, horas de seuño consumo de tranquilizantes")
 
 ```
-
 
 ```{r pregunta1-cajas, fig.show="hold", out.width="50%", fig.align="default"}
 datos_grafico <- datos %>%
@@ -620,9 +651,9 @@ data.frame(
         caption = "Correlaciones de la pregunta 1")
 ```
 
-**Respuesta a la pregunta 1.** Se aprecia que la media de las **horas de sueño** para todo el territorio español se sitúa en **7.82 horas**, pero que sin embargo, presenta una **desviación muy pequeña**, de 0.09. Esto refelja que va a existir poca variabilidad entre los distintos grupos. Por ello, cuando agrupamos las comunidades en función de si presentan una **contaminación lumínica superior o inferior** a la media, se obtienen **medias muy similares** respecto a las horas de sueño, con una diferenica de **0.02**, y no habiendo casi distinción en sus valores mínimos y máximos. Analizando los valores estadísticos obtenidos, se concluye lo siguiente. El **rho de Spearman** obtenido es de **-0.04** *(implica que de existir relación sería "a mayor contaminación, menor duración del sueño")*, y el **p-valor de 0.881**, muy **superior al 0.05** *(intervalo de confianza del 5% -alfa)* y por tanto, se concluye que **no es significativamente estadístico** el efecto de la contaminación lumínica en las horas de sueño. 
+**Respuesta a la pregunta 1.** Se aprecia que la media de las **horas de sueño** para todo el territorio español se sitúa en **7.82 horas**, pero que sin embargo, presenta una **desviación muy pequeña**, de 0.09. Esto refelja que va a existir poca variabilidad entre los distintos grupos. Por ello, cuando agrupamos las comunidades en función de si presentan una **contaminación lumínica superior o inferior** a la media, se obtienen **medias muy similares** respecto a las horas de sueño, con una diferenica de **0.02**, y no habiendo casi distinción en sus valores mínimos y máximos. Analizando los valores estadísticos obtenidos, se concluye lo siguiente. El **rho de Spearman** obtenido es de **-0.04** *(implica que de existir relación sería "a mayor contaminación, menor duración del sueño")*, y el **p-valor de 0.881**, muy **superior al 0.05** *(intervalo de confianza del 5% -alfa)* y por tanto, se concluye que **no es significativamente estadístico** el efecto de la contaminación lumínica en las horas de sueño.
 
-Respecto a la implicación de esta contaminación en el consumo de tranquilizantes o fármacos derivados para conciliar el sueño se ha obtenido una **media de 2.87%** respecto a la población española que consume estos, con una **desviación de 1.07**. Al agrupar las comunidades en función de una contaminación lumínica superior o inferior respecto a la media, se aprecian diferencias en los valores medios y extremos obtenidos. La media para los **territorios con menor contaminación** es de **2.68%** mientras que para aquellos con **mayor contaminación** es del **3.11%**. Respecto a los valores extremos, si bien el valor máximo no guarda correlación con la contaminación, al ser mayor en el grupo de menor índice; sí se aprecia un **efecto directo en su valor mínimo**. En las comunidades con un **índice superior a la media**, el **valor mínimo** de consumo de estas sustancias es de **1.92%**, mientras que para aquellas de **contaminación menor** es solo de un **0.75%**. Estas diferencias se aprecian en el gráfico de distribución. Sin embargo, debido a sus valores estadísticos obtenidos, **rho de Spearman** es de **0.12** y un **p-valor** de **0.649 mayor que 0.05**, no se puede concluir que esta diferencia apreciada sea significativamente estadística. 
+Respecto a la implicación de esta contaminación en el consumo de tranquilizantes o fármacos derivados para conciliar el sueño se ha obtenido una **media de 2.87%** respecto a la población española que consume estos, con una **desviación de 1.07**. Al agrupar las comunidades en función de una contaminación lumínica superior o inferior respecto a la media, se aprecian diferencias en los valores medios y extremos obtenidos. La media para los **territorios con menor contaminación** es de **2.68%** mientras que para aquellos con **mayor contaminación** es del **3.11%**. Respecto a los valores extremos, si bien el valor máximo no guarda correlación con la contaminación, al ser mayor en el grupo de menor índice; sí se aprecia un **efecto directo en su valor mínimo**. En las comunidades con un **índice superior a la media**, el **valor mínimo** de consumo de estas sustancias es de **1.92%**, mientras que para aquellas de **contaminación menor** es solo de un **0.75%**. Estas diferencias se aprecian en el gráfico de distribución. Sin embargo, debido a sus valores estadísticos obtenidos, **rho de Spearman** es de **0.12** y un **p-valor** de **0.649 mayor que 0.05**, no se puede concluir que esta diferencia apreciada sea significativamente estadística.
 
 Por tanto, se concluyo que **la contaminación lumínica no tiene un efecto estadísticamente significativo** ni en la **duración del sueño**, ni en el **consumo de fármacos y derivados** para conciliar el mismo.
 
@@ -712,8 +743,7 @@ data.frame(
         caption = "Correlaciones de la pregunta 2")
 ```
 
-**Respuesta a la pregunta 2.** Las comunidades con mayor exposición simultánea a luz y ruido son **Madrid, Canarias y Baleares**, y las de menor exposición, **Navarra, Castilla-La Mancha y Extremadura**. Las comunidades más expuestas presentan peores valores en las dos variables de salud mental: más **trastornos mentales** *(20,7% frente a 14,3%)* y más **depresión** *(mediana del 6,4% frente al 4,8%)*. La correlación con la **depresión es fuerte y significativa** *(rho = 0,7; p = 0,002)*, mientras que con los **trastornos mentales es moderada pero no significativa** *(rho = 0,39; p = 0,117)*. Por tanto, **los datos apoyan parcialmente la hipótesis**: la exposición simultánea a luz y ruido se asocia con una mayor prevalencia de depresión, pero no de forma clara con el conjunto de trastonos mentales. Destaca la **Comunidad Valenciana**, con una depresión muy superior al resto *(18%)* a pesar de tener una exposición intermedia, lo que indica que intervienen otros factores no tenidos en cuenta. 
-
+**Respuesta a la pregunta 2.** Las comunidades con mayor exposición simultánea a luz y ruido son **Madrid, Canarias y Baleares**, y las de menor exposición, **Navarra, Castilla-La Mancha y Extremadura**. Las comunidades más expuestas presentan peores valores en las dos variables de salud mental: más **trastornos mentales** *(20,7% frente a 14,3%)* y más **depresión** *(mediana del 6,4% frente al 4,8%)*. La correlación con la **depresión es fuerte y significativa** *(rho = 0,7; p = 0,002)*, mientras que con los **trastornos mentales es moderada pero no significativa** *(rho = 0,39; p = 0,117)*. Por tanto, **los datos apoyan parcialmente la hipótesis**: la exposición simultánea a luz y ruido se asocia con una mayor prevalencia de depresión, pero no de forma clara con el conjunto de trastonos mentales. Destaca la **Comunidad Valenciana**, con una depresión muy superior al resto *(18%)* a pesar de tener una exposición intermedia, lo que indica que intervienen otros factores no tenidos en cuenta.
 
 ### Tercera pregunta
 
@@ -800,20 +830,19 @@ data.frame(
         caption = "Correlaciones de la pregunta 3")
 ```
 
-**Respuesta a la pregunta 3.** La **percepción del ruido no coincide con el NO2** *(rho = 0,16; no significativa)*: Canarias es la comunidad donde más molesta el ruido y, sin embargo, la que menos NO2 presenta, mientras que Madrid, con el NO2 más alto, tiene bastante menos ruido molesto que Canarias o Baleares *(30% frente a casi un 39%)*. Esto indica que la molestia por el ruido no depende únicamente del tráfico, sino también de otros factores como el turismo, el ocio nocturno o la densidad de viviendas. Por el contrario, el **ruido percibido sí se relaciona con la depresión**: aquellas comunidades con más ruido molesto presentan más depresión *(mediana del 6,4% frente al 4,4%)*, con una correlación **fuerte y significativa** *(rho = 0,62; p = 0,008)*. Con el **consumo de antidepresivos** la relación es **moderada** *(rho = 0,49)* y queda **muy cerca de ser significativa** *(p = 0,057)*, teniendo en cuenta que estos datos son del año 2001. Por lo tanto, es la **percepción del ruido**, y no el NO2, la que se asocia con una mayor prevalencia de depresión. 
-
+**Respuesta a la pregunta 3.** La **percepción del ruido no coincide con el NO2** *(rho = 0,16; no significativa)*: Canarias es la comunidad donde más molesta el ruido y, sin embargo, la que menos NO2 presenta, mientras que Madrid, con el NO2 más alto, tiene bastante menos ruido molesto que Canarias o Baleares *(30% frente a casi un 39%)*. Esto indica que la molestia por el ruido no depende únicamente del tráfico, sino también de otros factores como el turismo, el ocio nocturno o la densidad de viviendas. Por el contrario, el **ruido percibido sí se relaciona con la depresión**: aquellas comunidades con más ruido molesto presentan más depresión *(mediana del 6,4% frente al 4,4%)*, con una correlación **fuerte y significativa** *(rho = 0,62; p = 0,008)*. Con el **consumo de antidepresivos** la relación es **moderada** *(rho = 0,49)* y queda **muy cerca de ser significativa** *(p = 0,057)*, teniendo en cuenta que estos datos son del año 2001. Por lo tanto, es la **percepción del ruido**, y no el NO2, la que se asocia con una mayor prevalencia de depresión.
 
 # Conclusiones generales
+
 Tras analizar de manera individual las distintas hipótesis planteadas, se exponen las conclusiones generales del seminario. Se ha observado que los **parámetros ambientales** tienen una **implicación directa** en el estado de la **salud mental poblacional**.
 
-Si bien **no se ha obtenido una evidencia estadística** en el efecto de la presencia excesiva de **luz artificial durante la noche** sobre la calidad y duración del **sueño**, ni los efectos de las contaminaciones lumínicas y acústicas en el **desarrollo de diversas patologías psicológicas**; se han obtenido resultados que apoyan la hipótesis general. 
+Si bien **no se ha obtenido una evidencia estadística** en el efecto de la presencia excesiva de **luz artificial durante la noche** sobre la calidad y duración del **sueño**, ni los efectos de las contaminaciones lumínicas y acústicas en el **desarrollo de diversas patologías psicológicas**; se han obtenido resultados que apoyan la hipótesis general.
 
-Se ha demostrado una **relación directa** entre los efectos de **nieveles excesivos** de **luz octurna y cotaminación acústica** en el desarrollo de **depresión**, así como una tendencia al consumo de antidepresivos *(aunque no llega a ser estadísticamente significativa)*. Además, se ha obtenido que el desarrollo de este transtorno mental se ve **influenciado en mayor grado** por la **percepción** poblacional de **ruido molesto** más que por las variables ambientales relativas a las partículas contaminantes como tal. Además, aunque la evidencia estadística no puede confirmar el efecto real o atribuirlo únicamente a la relación expresada, hay cierta correlación entre el efecto de la presencia excesiva de **luz artificial durante la noche** sobre el **consumo de fármacos** que ayudan a conciliar el sueño. 
+Se ha demostrado una **relación directa** entre los efectos de **nieveles excesivos** de **luz octurna y cotaminación acústica** en el desarrollo de **depresión**, así como una tendencia al consumo de antidepresivos *(aunque no llega a ser estadísticamente significativa)*. Además, se ha obtenido que el desarrollo de este transtorno mental se ve **influenciado en mayor grado** por la **percepción** poblacional de **ruido molesto** más que por las variables ambientales relativas a las partículas contaminantes como tal. Además, aunque la evidencia estadística no puede confirmar el efecto real o atribuirlo únicamente a la relación expresada, hay cierta correlación entre el efecto de la presencia excesiva de **luz artificial durante la noche** sobre el **consumo de fármacos** que ayudan a conciliar el sueño.
 
-Por todo ello, se confirma la **existencia de relación entre el desarrollo urbano con un deterioro de la salud mental poblacional**, y se concluye que el progreso de nuestras ciudadades debería tener en cuenta los efectos ambientales en el estado de la salud mental y no solo las implicaciones directas en el estado de la salud física. **La salud mental también es salud, y por ello, debería ser tenida en cuenta.** La calidad de vida no es solo unas carreteras bien asfaltadas, parques con bancos y fuentes y edificios de colores sofisticados, la calidad de vida es nuestra salud. 
+Por todo ello, se confirma la **existencia de relación entre el desarrollo urbano con un deterioro de la salud mental poblacional**, y se concluye que el progreso de nuestras ciudadades debería tener en cuenta los efectos ambientales en el estado de la salud mental y no solo las implicaciones directas en el estado de la salud física. **La salud mental también es salud, y por ello, debería ser tenida en cuenta.** La calidad de vida no es solo unas carreteras bien asfaltadas, parques con bancos y fuentes y edificios de colores sofisticados, la calidad de vida es nuestra salud.
 
 Y tú, **¿dónde elegirías vivir?**
-
 
 # Declaración del uso de Inteligencia Artifical
 

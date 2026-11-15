@@ -51,49 +51,6 @@ Según la definición de la **OMS**, *“la salud es un estado de completo biene
 
 En este seminario, que lleva por título *“El lado invisible del progreso urbano”*, se busca demostrar si el diseño y avance de las ciudades, que no suelen tener en cuenta su impacto en la salud mental de las personas,podrían estar asociados a un **deterioro** de esta a nivel poblacional. Para su desarrollo, se emplearán datos de fuentes oficiales relativas a datos ambientales e informes del gobierno relativos a la estadística sanitaria, y se estudiará la relación existente entre los niveles de **contaminación ambiental, contaminación acústica y lumínica**, en el estado general de **salud mental** poblacional, el desarrollo de **trastornos mentales** y el consumo derivado de **fármacos**.
 
-## El seminario en una imagen
-
-La siguiente **nube de palabras** resume los **conceptos clave** del seminario. El **tamaño** de cada palabra indica su peso en el trabajo *(de las variables principales a los conceptos de apoyo)* y el **color**, el tipo de concepto: [**morado oscuro**]{style="color:#512A75"} para la salud mental, [**rosa**]{style="color:#B5418A"} para la contaminación, [**lila**]{style="color:#9475B5"} para el entorno urbano y [**morado medio**]{style="color:#76509A"} para la metodología.
-
-```{r nube-palabras}
-# 1. Tabla con los conceptos clave del seminario:
-#    - palabra: texto que aparece en la nube
-#    - peso:    tamaño de la palabra (10 = concepto central, 3 = concepto de apoyo)
-#    - tipo:    grupo al que pertenece el concepto (sirve para darle color)
-conceptos <- data.frame(
-  palabra = c("Salud mental", "Depresión", "Trastornos mentales", "Sueño", "Antidepresivos",
-              "Ritmo circadiano", "Tranquilizantes", "Melatonina", "Bienestar", "Psicofármacos",
-              "Luz nocturna", "Ruido", "Contaminación lumínica", "Contaminación acústica", "NO2",
-              "Ozono", "Tráfico", "Contaminación atmosférica", "PM2.5",
-              "Progreso urbano", "Ciudades", "España", "Comunidades autónomas",
-              "Crecimiento urbano", "Calidad de vida",
-              "Correlación", "Spearman", "Normalización", "Satélite", "INE", "Google Earth Engine"),
-  peso    = c(10, 9, 7, 7, 6, 5, 5, 4, 4, 3,
-              9, 9, 6, 6, 6, 5, 5, 5, 3,
-              8, 6, 6, 5, 4, 4,
-              5, 4, 4, 4, 3, 3),
-  tipo    = c(rep("salud", 10), rep("contaminacion", 9), rep("urbano", 6), rep("metodo", 6))
-)
-
-# 2. Asignamos a cada tipo de concepto un color de la paleta morada del seminario (estilos.css)
-conceptos <- conceptos %>%
-  mutate(color = case_when(tipo == "salud"         ~ "#512A75",   # morado oscuro
-                           tipo == "contaminacion" ~ "#B5418A",   # rosa
-                           tipo == "urbano"        ~ "#9475B5",   # lila
-                           tipo == "metodo"        ~ "#76509A"))  # morado medio
-
-# 3. Dibujamos la nube
-# wordcloud2 necesita una tabla con la palabra en la 1.ª columna y su tamaño en la 2.ª
-wordcloud2(select(conceptos, palabra, peso),
-           color = conceptos$color,            # color de cada palabra
-           fontFamily = "Lato",                # misma tipografía que el resto del documento
-           fontWeight = "bold",                # letra en negrita
-           size = 0.32,                        # tamaño general 
-           gridSize = 6,                       # separación entre palabras
-           rotateRatio = 0,                    # todas las palabras en horizontal 
-           backgroundColor = "transparent",    # sin fondo propio
-           shape = "circle")                   # forma de la nube
-```
 
 ## Fuentes de obtención de datos
 
@@ -913,6 +870,53 @@ Los resultados deben interpretarse con prudencia por las siguientes limitaciones
 - **Indicadores indirectos:** el ruido se mide como percepción *(encuesta)* y no en decibelios, y el NO2 es solo un indicador aproximado del tráfico. El ozono medido por satélite corresponde a toda la columna atmosférica y no al ozono a nivel del suelo.
 - **Diferencias en el registro sanitario:** la prevalencia registrada depende de cómo diagnostica y registra cada servicio de salud, lo que podría explicar casos llamativos como el de la Comunidad Valenciana.
 - **Factores de confusión:** variables como la renta, la edad de la población, el desempleo o el turismo pueden influir a la vez en la contaminación y en la salud mental, y no se han tenido en cuenta.
+
+## El seminario en una imagen
+
+La siguiente **nube de palabras** resume los **conceptos clave** del seminario. El **tamaño** de cada palabra indica su peso en el trabajo *(de las variables principales a los conceptos de apoyo)* y el **color**, el tipo de concepto: [**morado oscuro**]{style="color:#512A75"} para la salud mental, [**rosa**]{style="color:#B5418A"} para la contaminación, [**lila**]{style="color:#9475B5"} para el entorno urbano y [**morado medio**]{style="color:#76509A"} para la metodología.
+
+```{r nube-palabras}
+# 1. Tabla con los conceptos clave del seminario:
+#    - palabra: texto que aparece en la nube
+#    - peso:    tamaño de la palabra (10 = concepto central, 3 = concepto de apoyo)
+#    - tipo:    grupo al que pertenece el concepto (sirve para darle color)
+conceptos <- data.frame(
+  palabra = c("Salud mental", "Depresión", "Trastornos mentales", "Sueño", "Antidepresivos",
+              "Ritmo circadiano", "Tranquilizantes", "Melatonina", "Bienestar", "Psicofármacos",
+              "Luz nocturna", "Ruido", "Contaminación lumínica", "Contaminación acústica", "NO2",
+              "Ozono", "Tráfico", "Contaminación atmosférica", "PM2.5",
+              "Progreso urbano", "Ciudades", "España", "Comunidades autónomas",
+              "Crecimiento urbano", "Calidad de vida",
+              "Correlación", "Spearman", "Normalización", "Satélite", "INE", "Google Earth Engine"),
+  peso    = c(10, 9, 7, 7, 6, 5, 5, 4, 4, 3,
+              9, 9, 6, 6, 6, 5, 5, 5, 3,
+              8, 6, 6, 5, 4, 4,
+              5, 4, 4, 4, 3, 3),
+  tipo    = c(rep("salud", 10), rep("contaminacion", 9), rep("urbano", 6), rep("metodo", 6))
+)
+
+# 2. Asignamos a cada tipo de concepto un color de la paleta morada del seminario (estilos.css)
+conceptos <- conceptos %>%
+  mutate(color = case_when(tipo == "salud"         ~ "#512A75",   # morado oscuro
+                           tipo == "contaminacion" ~ "#B5418A",   # rosa
+                           tipo == "urbano"        ~ "#9475B5",   # lila
+                           tipo == "metodo"        ~ "#76509A"))  # morado medio
+
+# 3. Dibujamos la nube
+# wordcloud2 necesita una tabla con la palabra en la 1.ª columna y su tamaño en la 2.ª
+wordcloud2(select(conceptos, palabra, peso),
+           color = conceptos$color,            # color de cada palabra
+           fontFamily = "Lato",                # misma tipografía que el resto del documento
+           fontWeight = "bold",                # letra en negrita
+           size = 0.32,                        # tamaño general 
+           gridSize = 6,                       # separación entre palabras
+           rotateRatio = 0,                    # todas las palabras en horizontal 
+           backgroundColor = "transparent",    # sin fondo propio
+           shape = "circle")                   # forma de la nube
+```
+
+
+
 
 ## Reflexión final
 

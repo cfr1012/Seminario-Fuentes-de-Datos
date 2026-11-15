@@ -213,21 +213,21 @@ knitr::kable(tabla_ccaa_contaminantes, digits = 3,
 
 ```
 
-Una vez se han importado todos los datos relacionados con el medio ambiente, se ha procedido a la elaboración de algunos gráficos representativos de tales variables. Para ello, se ha empleado la herramienta [The R Art Gallery](https://r-graph-gallery.com/), en concreto, el apartado correspondiente a **mapas construidos a partir de GeoJSON**, aprovechando el uso de este recurso importado.
+Una vez se han importado todos los datos relacionados con el medio ambiente, se ha procedido a la elaboración de algunos gráficos representativos de tales variables. Para ello, se ha empleado la herramienta [The R Graph Gallery](https://r-graph-gallery.com/), en concreto, el apartado correspondiente a **mapas construidos a partir de GeoJSON**, aprovechando el uso de este recurso importado.
 
-De esta forma, se ha elaborado un **mapa de luz** que permite de manera visual obervar la iluminación territorial durante la noche. Para ello, se ha importado el **mapa base de la Nasa**, en su **versión nocturna del 2012**. Sobre este, se han representado los datos actualizados de esta variable para el territorio español. De esta forma, los datos observados en otros países del mapa son datos reales de la luz nocturna, aunque no relevantes en este estudio.
+De esta forma, se ha elaborado un **mapa de luz** que permite de manera visual observar la iluminación territorial durante la noche. Para ello, se ha importado el **mapa base de la Nasa**, en su **versión nocturna del 2012**. Sobre este, se han representado los datos actualizados de esta variable para el territorio español. De esta forma, los datos observados en otros países del mapa son datos reales de la luz nocturna, aunque no relevantes en este estudio.
 
 Para graficar los datos relativos al NO2 y O3 se ha empleado nuevamente los GeoJSON como fuente de datos. No obstante, el mapa empleado en este caso es de **relieve**.
 
 ```{r graficar-luz, fig.align='center'}
+# Paleta de colores "magma" ajustada al rango de valores de luz.
+# Los datos de Ceuta y Melilla son extremos, por lo que se emplea el logaritmo para evitar que toda la península se represente con el mismo color.
 pal <- colorNumeric("magma", domain = log10(luz$mean)) 
-# los datos de Ceuta y Melilla son extremos
-# se emplea el logaritmo para evitar que toda la península se represente igual
 
-leaflet(luz) %>%
+leaflet(luz) %>% # Mapa interactivo con los polígonos de la luz.
   addTiles() %>%
   setView(lng = -3.7, lat = 40, zoom = 5) %>%
-  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") %>%
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") %>% # Mapa nocturno de la NASA.
   addPolygons(
     fillColor   = ~pal(log10(mean)),
     fillOpacity = 0.6,
@@ -236,7 +236,7 @@ leaflet(luz) %>%
   ) %>%
   addLegend(
     pal = pal, values = ~log10(mean), title = "Luz nocturna por CA",
-    labFormat = labelFormat(transform = function(x) 10^x, digits = 1),
+    labFormat = labelFormat(transform = function(x) 10^x, digits = 1), # Permite deshacer el log en la leyenda.
     position = "bottomleft"
   )
 ```
@@ -245,13 +245,13 @@ leaflet(luz) %>%
 # Se pasa el NO2 de mol/m² a µmol/m².
 no2 <- no2 %>%
   mutate(NO2_umol = mean * 1e6)
-
+# Paleta "magma" ajustada al rango de valores de NO2.
 pal <- colorNumeric("magma", domain = no2$NO2_umol)
 
 leaflet(no2) %>%
   addTiles() %>%
   setView(lng = -3.7, lat = 40, zoom = 6) %>%
-  addProviderTiles("Esri.WorldTerrain") %>%
+  addProviderTiles("Esri.WorldTerrain") %>% # Mapa base de relieve.
   addPolygons(
     fillColor   = ~pal(NO2_umol),
     fillOpacity = 0.8,
@@ -265,6 +265,7 @@ leaflet(no2) %>%
 ```
 
 ```{r graficar-O3, fig.align='center'}
+# Paleta "magma" ajustada al rango de valores de ozono.
 pal <- colorNumeric("magma", domain = o3$mean)
 
 leaflet(o3) %>%
@@ -286,6 +287,7 @@ leaflet(o3) %>%
 ### Datos sanitarios
 
 ```{r importar-saludMental}
+# En los Excels los datos no empiezan en la primera fila (hay títulos y notas), así que con "range" hemos indicado exactamente cuáles son las celdas a leer.
 antidepresivos <- read_excel("data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "Consumo antidepresivos", range = "B11:D28", 
     col_names = FALSE, col_types = c("text", "skip", "numeric"))
@@ -295,6 +297,7 @@ knitr::kable(antidepresivos, digits = 3, col.names = c("Comunidad autónoma", "A
 ```
 
 ```{r importar-consumoMedicamentos}
+# Se trata del mismo fichero que el anterior, pero otra hoja que seleccionamos con "sheet".
 tranquilizantes <- read_excel("data/sanitarios/ConsumoMedicamentosSaludMental_Espana_2001.xls", 
     sheet = "consumo tranquilizantes", range = "B10:D28", 
     col_types = c("text", "skip", "numeric"))
@@ -310,6 +313,7 @@ knitr::kable(ruido, digits = 3, col.names = c("Comunidad autónoma", "Ruido exte
 ```
 
 ```{r importar-trastornosMentales}
+# Trastornos mentales: de A6 a B22 (este fichero no incluye ni Ceuta ni Melilla).
 trastornos <- read_excel("data/sanitarios/TrastornosMentales_Espana_2023.xls", 
     range = "A6:B22", col_names = FALSE)
 
@@ -317,6 +321,8 @@ knitr::kable(trastornos, digits = 3, col.names = c("Comunidad autónoma", "Trast
 ```
 
 ```{r importar-depresion}
+# Los CSV del INE usan ";" como separador de columnas y "," para los decimales, por ello se usa read_csv2().
+# Están guardados en la codificación Windows-1252, por lo que se indica para que las tildes y ñ se leean correctamente.
 depresion <- read_csv2(
   "data/sanitarios/CuadroDepresion_Espana_2022.csv",
   locale = locale(encoding = "Windows-1252"),
@@ -336,10 +342,11 @@ sueno <- read_csv2(
 knitr::kable(sueno, digits = 3, caption = "Horas de sueño")
 ```
 
-###Datos poblacionales
+### Datos poblacionales
 
 ```{r importar-poblacion}
-# Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022)
+# Población oficial a 1 de enero de 2022 (INE, Padrón municipal; BOE RD 1037/2022).
+# Con data.frame() se crea la tabla "a mano", de tal forma que en una columna están los nombres y en otra los habitantes en el mismo orden. Se utiliza con objeto de pasar la depresión de número de personas a porcentaje.
 poblacion <- data.frame(
   Comunidad = c("Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias",
                 "Cantabria", "Castilla y León", "Castilla-La Mancha", "Cataluña",
@@ -371,6 +378,8 @@ Cada fuente *"habla un idioma distinto"*, así que antes de poder comparar las v
 En primer lugar, se va a llevar a cabo la unificación de los nombres de las Comunidades Autónomas.
 
 ```{r funcion-nombres}
+# Función propia que recibe un nombre de una comunidad autónoma escrito de cualquier forma y devuelve siempre el mismo nombre estándar, para poder unir las tablas con left_join().
+# grepl("Andaluc", nombre) devuelve TRUE si el nombre contiene ese trozo de texto.
 normalizar_ccaa <- function(nombre) {
   case_when(
     grepl("Ceuta y Melilla", nombre) ~ "Ceuta y Melilla",
@@ -400,9 +409,11 @@ normalizar_ccaa <- function(nombre) {
 
 ### Modificación tipos de datos importados
 
-La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una **incorrección en el tipo de dato** relativo a las **horas de sueño** totales. Este valor es de tipo caracter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modicicación de su tipo de dato.
+La importación de datos mediante la lectura de su fichero no garantiza la corrección en el formato de los datos importados. En este caso, hay una **incorrección en el tipo de dato** relativo a las **horas de sueño** totales. Este valor es de tipo carácter, lo cual no guarda relación con los números contenidos en su interior. Es por ello que se va a llevar a cabo la modificación de su tipo de dato.
 
 ```{r sueno-formatoNumerico}
+# select() -> se queda con la columna 3 que corresponde a la de la comunidad y con la 5 que es la de horas de sueño y les cambia el nombre.
+# as.numeric() -> convierte el texto en número.
 sueno_numerico <- sueno %>%
   select(Comunidad = 3, Horas_sueno = 5) %>%
   mutate(Horas_sueno = as.numeric(gsub(",", ".", Horas_sueno)))
@@ -416,12 +427,14 @@ Cada tabla se reduce a dos columnas: `Comunidad` y el valor de la variable. Con 
 
 ```{r tablas-limpias}
 # VARIABLES AMBIENTALES (GeoJSON).
-
+# Los tres GeoJSON escriben los nombres igual, así que se normalizan posteriormente en su unión.
 tabla_luz <- st_drop_geometry(luz) %>% select(Comunidad = ADM1_NAME, Luz = mean)
 tabla_no2 <- st_drop_geometry(no2) %>% select(Comunidad = ADM1_NAME, NO2 = mean)
 tabla_o3 <- st_drop_geometry(o3) %>% select(Comunidad = ADM1_NAME, O3 = mean)
 
 # VARIABLES DE SALUD (Excel).
+# select(Comunidad = 1, Ruido = 2) -> permite elegir las columnas por su posición y les pone un nombre.
+# mutate(Comunidad = normalizar_ccaa(Comunidad)) -> para sustituir los nombres por los estándar.
 tabla_ruido <- ruido %>%
   select(Comunidad = 1, Ruido = 2) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
@@ -443,6 +456,7 @@ tabla_depresion <- depresion %>%
   select(Comunidad = 2, Depresion_miles = 4) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
 
+# filter(!is.na(Comunidad)) -> quita la primera fila, que es el total nacional y no tiene comunidad
 tabla_sueno <- sueno_numerico %>%
   filter(!is.na(Comunidad)) %>%
   mutate(Comunidad = normalizar_ccaa(Comunidad))
@@ -465,6 +479,8 @@ Posteriormente, se van a convertir las unidades, siguiendo los siguientes parám
 
 ```{r unidades}
 # Se van a unir las tres variables ambientales por el nombre (en los tres GeoJSON es igual), y después, se normalizan los nombres y unidades correspondientes.
+# NO2 * 1e6 -> de mol/m² a µmol/m² (1e6 = 1.000.000).
+# O3 / 4.4615e-4 -> de mol/m² a Unidades Dobson.
 tabla_ambiente <- tabla_luz %>%
   left_join(tabla_no2, by = "Comunidad") %>%
   left_join(tabla_o3, by = "Comunidad") %>%
@@ -473,6 +489,7 @@ tabla_ambiente <- tabla_luz %>%
         O3 = O3 / 4.4615e-4)
 
 # Depresión: de miles de personas a porcentaje de la población.
+# Se une la población de cada comunidad y se calcula: (miles × 1000) / población × 100
 tabla_depresion <- tabla_depresion %>%
   left_join(tabla_poblacion, by = "Comunidad") %>%
   mutate(Depresion_pct = Depresion_miles * 1000/Poblacion*100)
@@ -484,6 +501,10 @@ tabla_depresion <- tabla_depresion %>%
 Se va a unir todo en una única tabla llamada `datos`, en la que cada fila se corresponde con una comunidad autónoma. Cabe destacar, que se van a excluir **Ceuta y Melilla** porque: no aparecen en los datos de trastornos mentales, en los datos de 2001 aparecen sumadas en una sola fila y, al ser territorios muy pequeños, la media de los datos de satélite puede ser poco significativa.
 
 ```{r tabla-maestra}
+# left_join() va pegando las columnas de cada tabla, emparejando las filas por "Comunidad".
+# filter(!Comunidad %in% c("Ceuta", "Melilla")) -> se queda con las que NO son Ceuta ni Melilla.
+# select(-...) -> el signo menos permite quitar las columnas que ya no se necesitan.
+# arrange(Comunidad) -> para ordenar por orden alfabético.
 datos <- tabla_ambiente %>%
   left_join(tabla_ruido,            by = "Comunidad") %>%
   left_join(tabla_trastornos,       by = "Comunidad") %>%
@@ -501,7 +522,7 @@ kable(datos, digits = 2,
                     "Horas de sueño", "Tranquilizantes (por 100 hab.)",
                     "Antidepresivos (por 100 hab.)"),
       caption = "Tabla maestra: variables normalizadas por comunidad autónoma")%>%
-# Como no cabe en el ancho de la página activamos el scroll
+# Como la tabla no cabe en el ancho de la página activamos el scroll (una barra de desplazamiento).
   kableExtra::scroll_box(width = "100%") 
 
 ```
@@ -513,13 +534,17 @@ La luz y el ruido se miden en unidades distintas, así que no se pueden sumar di
 $$x_{normalizado} = \frac{x - x_{min}}{x_{max} - x_{min}}$$ Con ambas variables en la misma escala, se construye un **índice de exposición combinada** (resultante de la media de las dos).
 
 ```{r normalizacion-0-1}
+# Función propia que aplica la fórmula anterior a una columna.
+# na.rm = TRUE ignora los datos que faltan (NA) al calcular el mínimo y el máximo.
 normalizar_0_1 <- function(x) {
   (x - min(x, na.rm = TRUE)) / (max(x, na.rm= TRUE) - min(x, na.rm = TRUE))
 }
+# Se crean tres columnas nuevas: la luz y el ruido en escala 0-1, y su media (el índice)
 datos <- datos %>%
   mutate(Luz_norm = normalizar_0_1(Luz),
          Ruido_norm = normalizar_0_1(Ruido),
          Indice_exposicion = (Luz_norm + Ruido_norm)/2)
+# Se muestran las 5 comunidades con mayor índice: arrange(desc()) ordena de mayor a menor y head(5) se queda con las 5 primeras filas.
 datos %>%
   select(Comunidad, Luz, Luz_norm, Ruido, Ruido_norm,Indice_exposicion) %>%
   arrange(desc(Indice_exposicion)) %>%
@@ -531,7 +556,14 @@ datos %>%
 
 A continuación, se encuentra una función que permite calcular la **correlación de Spearman** entre dos variables y retorna el **rho** y el **p-valor** redondeados. Dicha función se utilizará para responder las preguntas correspondientes.
 
+Se emplea la correlación de **Spearman** en lugar de la de Pearson porque solo se dispone de **17 comunidades** y existen **valores extremos** *(Madrid en luz nocturna y la Comunidad Valenciana en depresión)*. Spearman trabaja con el **orden** de los valores y no con los valores en sí, por lo que un dato extremo no condiciona el resultado. El coeficiente **rho** va de -1 a 1: si es positivo, ambas variables aumentan a la vez; si es negativo, cuando una aumenta la otra disminuye *(|rho| < 0,3 relación débil; entre 0,3 y 0,5 moderada; > 0,5 fuerte)*. El **p-valor** indica si la relación es **estadísticamente significativa**, lo que ocurre cuando es menor que el nivel de significación **α = 0,05**.
+
 ```{r funcion-correlacion}
+# Función propia que recibe dos columnas (x e y): cor.test(..., method = "spearman") que calcula la correlación de Spearman.
+# exact = FALSE evita un aviso de R cuando hay valores repetidos.
+# prueba$estimate es rho y prueba$p.value es el p-valor
+# unname() quita la etiqueta "rho" que trae el número y round() lo redondea.
+# Finalmente, devuelve los dos números juntos con c().
 correlacion <- function(x,y) {
   prueba <- cor.test(x, y, method = "spearman", exact = FALSE)
   c(rho = round(unname(prueba$estimate), 2), 

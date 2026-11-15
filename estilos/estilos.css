@@ -104,6 +104,16 @@ a {
     background-color: #76509A;
     transform: scale(1.03);
 }
+
+/*Párrafos y elementos de listas alineados a ambos márgenes.*/
+.main-container p,
+.main-container li {
+  text-align: justify;
+  hyphens: auto;
+}
+
+
+
 /* TABLAS: ANCHO AJUSTADO AL CONTENIDO Y CENTRADAS */
 table {
   width: auto !important;

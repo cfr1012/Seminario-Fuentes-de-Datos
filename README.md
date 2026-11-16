@@ -37,13 +37,25 @@ En este seminario se explora, con **datos oficiales** y a escala de **comunidad 
 
 <div align="center">
 
-## VER EL SEMINARIO
+## OBJETIVOS
 
-Descarga el archivo **[`Seminario-Fuentes-de-Datos.html`](Seminario-Fuentes-de-Datos.html)** y ábrelo con cualquier navegador.
+### Objetivo general
 
-Contiene el texto, el código en R y todas las tablas, gráficos y mapas interactivos.
+Analizar, a escala de Comunidad Autónoma, si la exposición lumínica, acústica y atmosférica se relaciona con peores indicadores de salud en España.
 
-</div>
+### Objetivos específicos
+
+1. Estudiar el impacto que tiene la presencia de luz artificial durante la noche sobre nuestro ritmo circadiano.
+Pretende buscar el impacto que tiene la no presencia de oscuridad en las horas nocturnas y el impacto en la conciliación del sueño.
+
+2. Vincular los factores contaminantes con el deterioro del estado de salud mental.
+Observar el efecto de estos contaminantes en la prevalencia del deterioro del estado de la salud mental y, en consecuencia, 
+con el desarrollo de trastornos mentales.
+
+3. Comprobar la percepción pública con los datos reales de percepción acústica. 
+Establecer si el ruido es un factor influyente en el desarrollo de cuadros depresivos y, por tanto, una ciudad con peor índice de esta 
+contaminación se ve condicionada a un mayor consumo de fármacos antidepresivos en su población.
+
 
 <div align="center">
 

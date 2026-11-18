@@ -14,6 +14,41 @@ body {
   border-radius: 12px;
 }
 
+/* AUTORAS*/
+.author {
+  font-size: 2rem !important;
+  font-weight: bold;
+  color: #512A75;
+
+  border: 3px solid #512A75;
+  border-radius: 12px;
+
+  padding: 15px 25px;
+  margin: 20px auto;
+
+  background-color: transparent;
+
+  width: fit-content;
+  text-align: center;
+}
+
+/* FECHA*/
+.date {
+  text-align: center;
+  font-size: 1.6rem !important;
+  color: black;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* LÍNEAS HORIZONTALES*/
+hr {
+  border: none;
+  border-top: 3px solid #512A75;
+  width: 80%;
+  margin: 30px auto;
+}
+
 /* DISEÑO DE LOS DISTINTOS NIVELES DE TÍTULOS Y SUBTÍTULOS*/
 h1 {
   color: #512A75;
@@ -46,73 +81,77 @@ a {
   color: #76509A;
 }
 
-/* MENÚ DEL ÍNDICE */
+/* ÍNDICE DE CONTENIDOS */
 #TOC {
-    margin: 30px auto;
-    padding: 20px;
-    border: none;
+    width: 500px;
+    margin: 20px auto;
+    padding: 15px;
+    background: #f8f5fb;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 #TOC ul {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding-left: 0;
 }
 
 #TOC li {
-    display: block;
     margin: 12px 0;
+    line-height: 1.4;
 }
 
 #TOC > ul > li > a {
-    display: inline-block;
-    background-color: #512A75;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 22px;
+    display: block;
+    background: #512A75;
+    color: white !important;
+    padding: 14px 20px;
+    border-radius: 12px;
     text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: bold;
-    box-shadow: 0 3px 7px rgba(0,0,0,0.2);
+    font-size: 1.4rem;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    text-align: center;
 }
 
 #TOC > ul > li > ul > li > a {
-    display: inline-block;
-    background-color: #9475B5;
-    color: white;
-    padding: 8px 17px;
-    border-radius: 20px;
+    display: block;
+    background: #9475B5;
+    color: white !important;
+    padding: 12px 18px;
+    border-radius: 10px;
     text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    font-size: 1.4rem;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #TOC > ul > li > ul > li > ul > li > a {
-    display: inline-block;
-    background-color: #D8CBE5;
-    color: #2D1940;
-    padding: 7px 15px;
-    border-radius: 17px;
+    display: block;
+    background: #D8CBE5;
+    color: #2D1940 !important;
+    padding: 10px 16px;
+    border-radius: 8px;
     text-decoration: none;
-    font-size: 0.84rem;
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 1.4rem;
+    margin-left: 30px;
+    text-align: center;
+}
+
+#TOC ul ul {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+
+#TOC li:hover > ul {
+    max-height: 1000px;
 }
 
 #TOC a:hover {
     background-color: #76509A;
-    transform: scale(1.03);
+    transition: background-color 0.2s ease;
 }
-
-/*Párrafos y elementos de listas alineados a ambos márgenes.*/
-.main-container p,
-.main-container li {
-  text-align: justify;
-  hyphens: auto;
-}
-
-
 
 /* TABLAS: ANCHO AJUSTADO AL CONTENIDO Y CENTRADAS */
 table {
@@ -131,13 +170,22 @@ caption {
   font-weight: bold;
   text-align: center;
 }
+
 /* MAPAS INTERACTIVOS (leaflet): CENTRADOS */
 .html-widget {
   margin-left: auto;
   margin-right: auto;
 }
+
 /* SUBAPARTADOS (###) DEL MISMO COLOR QUE LOS TÍTULOS */
 .section h3,
 .section h4 {
   color: #512A75;
+}
+
+/* TAMAÑO DE LA PÁGINA */
+.container-fluid,
+.main-container {
+    max-width: 1600px !important;
+    width: 80% !important;
 }

@@ -189,3 +189,8 @@ caption {
     max-width: 1600px !important;
     width: 80% !important;
 }
+
+/* JUSTIFICAR TODOS LOS PÁRRAFOS Y LISTAS DEL DOCUMENTO */
+p, li {
+  text-align: justify;
+}
